@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Travy App",
+    "slug": "travy-app",
+    "privacy": "public",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
+      }
+    },
+    "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
+        }
+      }
+    },
+    "description": ""
+  }
+}

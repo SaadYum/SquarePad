@@ -1,0 +1,20 @@
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.6.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyACf130jnv_mYX-eS8ZaEKpKSYe0tAg0tA",
+    authDomain: "travycomsats.firebaseapp.com",
+    databaseURL: "https://travycomsats.firebaseio.com",
+    projectId: "travycomsats",
+    storageBucket: "",
+    messagingSenderId: "3416567928",
+    appId: "1:3416567928:web:abf19a8fbdd6a20fc03d8d"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>

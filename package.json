@@ -1,0 +1,80 @@
+{
+  "name": "argon-react-native",
+  "version": "1.1.0",
+  "description": "Argon React Native, based on Argon Design System. Coded by Creative Tim",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "eject": "expo eject"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creativetimofficial/argon-react-native.git"
+  },
+  "dependencies": {
+    "@mapbox/polyline": "^1.1.0",
+    "content-based-recommender": "^1.4.0",
+    "expo": "^37.0.0",
+    "expo-asset": "~8.1.5",
+    "expo-constants": "~9.0.0",
+    "expo-font": "~8.1.0",
+    "expo-image-picker": "~8.1.0",
+    "expo-notifications": "~0.1.1",
+    "expo-permissions": "~8.1.0",
+    "firebase": "7.9.0",
+    "galio-framework": "^0.5.4",
+    "node-fetch": "^2.6.0",
+    "prop-types": "^15.7.2",
+    "react": "16.9.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
+    "react-native-datepicker": "^1.7.2",
+    "react-native-dropdown-picker": "^3.1.9",
+    "react-native-elements": "^1.2.7",
+    "react-native-gesture-handler": "~1.6.0",
+    "react-native-gifted-chat": "^0.16.3",
+    "react-native-google-autocomplete": "^0.1.7",
+    "react-native-google-maps-directions": "^2.1.1",
+    "react-native-google-places-autocomplete": "^1.3.9",
+    "react-native-image-slider-box": "^1.0.12",
+    "react-native-loading-spinner-overlay": "^1.1.0",
+    "react-native-maps": "0.26.1",
+    "react-native-modal": "^11.5.6",
+    "react-native-modal-activityindicator": "0.0.1",
+    "react-native-modal-dropdown": "^0.6.2",
+    "react-native-screens": "~2.2.0",
+    "react-native-star-rating": "^1.1.0",
+    "react-navigation": "^3.11.1",
+    "react-navigation-tabs": "^2.4.1",
+    "expo-av": "~8.1.0",
+    "expo-google-sign-in": "~8.1.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^8.1.0"
+  },
+  "keywords": [
+    "argon react native",
+    "argon design system",
+    "argon app react native",
+    "argon iOS",
+    "react native iOS",
+    "creative tim",
+    "argon Android",
+    "react native ui kit",
+    "react native expo",
+    "freebie",
+    "react native argon design",
+    "react native galio",
+    "galio argon free",
+    "galio react native free app",
+    "argon expo react native",
+    "react native ui template"
+  ],
+  "author": "Creative Tim <hello@creative-tim.com> (https://www.creative-tim.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/creativetimofficial/argon-react-native/issues"
+  },
+  "homepage": "https://demos.creative-tim.com/argon-react-native"
+}
