@@ -17,6 +17,13 @@ import * as Location from "expo-location";
 
 import { Images } from "../constants";
 import { FlatList } from "react-native-gesture-handler";
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded,
+  setTestDeviceIDAsync,
+} from "expo-ads-admob";
 
 const { width } = Dimensions.get("screen");
 
@@ -338,6 +345,18 @@ class Home extends React.Component {
   render() {
     return (
       <Block flex center style={styles.home}>
+        <AdMobBanner
+          bannerSize="banner"
+          adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+          servePersonalizedAds // true or false
+          // onDidFailToReceiveAdWithError={this.bannerError}
+        />
+        <PublisherBanner
+          bannerSize="banner"
+          adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+          // onDidFailToReceiveAdWithError={this.bannerError}
+          onAdMobDispatchAppEvent={this.adMobEvent}
+        />
         {this.renderArticles()}
       </Block>
     );
