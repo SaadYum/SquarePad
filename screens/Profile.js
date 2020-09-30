@@ -341,8 +341,8 @@ class Profile extends React.Component {
         style={{ width, marginTop: "5%" }}
       >
         <Block style={styles.profileCard}>
-          <Block middle row space="evenly" style={{ paddingBottom: 24 }}>
-            <Block middle style={styles.avatarContainer}>
+          <Block middle flex row space="evenly" style={{ paddingBottom: 24 }}>
+            <Block middle flex={1} style={styles.avatarContainer}>
               <TouchableOpacity onLongPress={this.chooseProfilePicture}>
                 <Image
                   source={{ uri: profilePic }}
@@ -352,8 +352,19 @@ class Profile extends React.Component {
               </TouchableOpacity>
             </Block>
 
-            <Block flex right style={{ paddingRight: 10 }}>
-              <Block flex={1}>
+            <Block flex={2}>
+              <Block middle style={styles.nameInfo}>
+                <Text bold size={28} color="#32325D">
+                  {this.state.username}
+                </Text>
+                <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
+                  {this.state.name}
+                </Text>
+              </Block>
+              {/* <Block middle style={{ marginTop: 10, marginBottom: 10 }}>
+                <Block style={styles.divider} />
+              </Block> */}
+              {/* <Block flex={1}>
                 <Button
                   small
                   shadowless={false}
@@ -403,7 +414,7 @@ class Profile extends React.Component {
                 >
                   LOG OUT
                 </Button>
-              </Block>
+              </Block> */}
             </Block>
           </Block>
           <Block style={styles.info}>
@@ -443,18 +454,10 @@ class Profile extends React.Component {
               </Block>
             </Block>
           </Block>
+          <Block middle style={{ marginTop: 10, marginBottom: 10 }}>
+            <Block style={styles.divider} />
+          </Block>
           <Block flex>
-            <Block middle style={styles.nameInfo}>
-              <Text bold size={28} color="#32325D">
-                {this.state.username}
-              </Text>
-              <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
-                {this.state.name}
-              </Text>
-            </Block>
-            <Block middle style={{ marginTop: 10, marginBottom: 10 }}>
-              <Block style={styles.divider} />
-            </Block>
             <Block middle>
               <Text size={16} color="#525F7F" style={{ textAlign: "center" }}>
                 {this.state.bio}

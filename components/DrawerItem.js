@@ -49,8 +49,8 @@ class DrawerItem extends React.Component {
       case "Profile":
         return (
           <Icon
-            name="chart-pie-35"
-            family="ArgonExtra"
+            name="edit"
+            family="antdesign"
             size={12}
             color={focused ? "black" : argonTheme.COLORS.ICON}
           />
@@ -67,7 +67,14 @@ class DrawerItem extends React.Component {
       case "Getting Started":
         return <Icon />;
       case "Log out":
-        return <Icon />;
+        return (
+          <Icon
+            name="logout"
+            family="AntDesign"
+            size={12}
+            color={focused ? "black" : argonTheme.COLORS.ICON}
+          />
+        );
       default:
         return null;
     }
@@ -78,7 +85,7 @@ class DrawerItem extends React.Component {
 
     const containerStyles = [
       styles.defaultStyle,
-      focused ? [styles.activeStyle, styles.shadow] : null
+      focused ? [styles.activeStyle, styles.shadow] : null,
     ];
 
     return (
@@ -103,21 +110,21 @@ class DrawerItem extends React.Component {
 const styles = StyleSheet.create({
   defaultStyle: {
     paddingVertical: 15,
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
   },
   activeStyle: {
     backgroundColor: argonTheme.COLORS.GREY,
-    borderRadius: 4
+    borderRadius: 4,
   },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowRadius: 8,
-    shadowOpacity: 0.1
-  }
+    shadowOpacity: 0.1,
+  },
 });
 
 export default DrawerItem;

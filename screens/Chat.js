@@ -246,43 +246,13 @@ class Chat extends React.Component {
   render() {
     return (
       <Block flex>
-        <Block right flex={1}>
-          <Button
-            onlyIcon
-            icon="direction"
-            iconFamily="entypo"
-            iconSize={20}
-            color="tomato"
-            iconColor="#fff"
-            shadowless
-            style={{
-              width: 40,
-              height: 40,
-              marginRight: 5,
-              marginTop: 12,
-            }}
-            // onPress={() => {
-            //   this.generateSpotDirections(u);
-            // }}
-          ></Button>
-          <Block
-            style={{
-              borderBottomColor: "#ebebeb",
-              marginTop: 10,
-              borderBottomWidth: 1,
-              // width: width * 0.5,
-            }}
-          />
-        </Block>
-        <Block flex={2}>
-          <GiftedChat
-            messages={this.state.messages}
-            onSend={this.onSend}
-            user={{
-              _id: this.currentUserId,
-            }}
-          />
-        </Block>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={this.onSend}
+          user={{
+            _id: this.currentUserId,
+          }}
+        />
       </Block>
     );
   }

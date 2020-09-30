@@ -105,6 +105,20 @@ const EditButton = ({ isWhite, style, navigation }) => (
   </TouchableOpacity>
 );
 
+const SettingsButton = ({ isWhite, style, navigation }) => (
+  <TouchableOpacity
+    style={[styles.button, style]}
+    onPress={() => navigation.navigate("Settings")}
+  >
+    <Icon
+      family="evilicons"
+      size={20}
+      name="navicon"
+      color={argonTheme.COLORS[isWhite ? "WHITE" : "ICON"]}
+    />
+  </TouchableOpacity>
+);
+
 const SearchButton = ({ isWhite, style, navigation }) => (
   <TouchableOpacity
     style={[styles.button, style]}
@@ -185,8 +199,8 @@ class Header extends React.Component {
         ];
       case "Profile":
         return [
-          <EditButton
-            key="updateProfile"
+          <SettingsButton
+            key="ProfileSettings"
             navigation={navigation}
             isWhite={white}
           />,
@@ -221,19 +235,19 @@ class Header extends React.Component {
             isWhite={white}
           />,
         ];
-      case "Settings":
-        return [
-          <BellButton
-            key="chat-search"
-            navigation={navigation}
-            isWhite={white}
-          />,
-          <BasketButton
-            key="basket-search"
-            navigation={navigation}
-            isWhite={white}
-          />,
-        ];
+      // case "Settings":
+      //   return [
+      //     <BellButton
+      //       key="chat-search"
+      //       navigation={navigation}
+      //       isWhite={white}
+      //     />,
+      //     <BasketButton
+      //       key="basket-search"
+      //       navigation={navigation}
+      //       isWhite={white}
+      //     />,
+      //   ];
       default:
         break;
     }

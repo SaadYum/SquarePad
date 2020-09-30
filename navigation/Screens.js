@@ -64,6 +64,7 @@ import EditGroup from "../screens/EditGroup";
 import SharePlan from "../screens/SharePlan";
 import PlanDetails from "../screens/PlanDetails";
 import PlanJoinRequests from "../screens/PlanJoinRequests";
+import ProfileSettings from "../screens/ProfileSettings";
 
 const TabBarComponent = (props) => <BottomTabBar {...props} />;
 
@@ -306,6 +307,33 @@ const ExploreStack = createStackNavigator(
   }
 );
 
+// const profileScreen = createDrawerNavigator({
+//   Profile: {
+//     screen: Profile,
+//     navigationOptions: (navOpt) => ({
+//       drawerLabel: ({ focused }) => (
+//         <DrawerItem focused={focused} screen="Profile" title="Profile" />
+//       ),
+//     }),
+//   },
+//   Update: {
+//     screen: UpdateProfile,
+//     navigationOptions: ({ navigation }) => ({
+//       drawerLabel: ({ focused }) => (
+//         <DrawerItem focused={focused} screen="Update Profile" title="Profile" />
+//       ),
+//     }),
+//   },
+//   LogOut: {
+//     screen: UpdateProfile,
+//     navigationOptions: ({ navigation }) => ({
+//       drawerLabel: ({ focused }) => (
+//         <DrawerItem focused={focused} title="Log out" />
+//       ),
+//     }),
+//   },
+// });
+
 const ProfileStack = createStackNavigator(
   {
     Profile: {
@@ -332,59 +360,19 @@ const ProfileStack = createStackNavigator(
         headerTransparent: false,
       }),
     },
-    MyPlans: {
-      screen: MyPlans,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="My Plans" navigation={navigation} />,
-      }),
-    },
-    PlanDetails: {
-      screen: PlanDetails,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Plan" navigation={navigation} />,
-      }),
-    },
-    PlanJoinRequests: {
-      screen: PlanJoinRequests,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Requests" navigation={navigation} />,
-      }),
-    },
-    EditPlan: {
-      screen: EditPlan,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Edit Plan" navigation={navigation} />,
-      }),
-    },
 
-    EditSpot: {
-      screen: EditSpot,
+    Settings: {
+      screen: ProfileSettings,
       navigationOptions: ({ navigation }) => ({
-        header: <Header back title="EditSpot" navigation={navigation} />,
-      }),
-    },
-    EditMembers: {
-      screen: EditMembers,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Members" navigation={navigation} />,
-      }),
-    },
-    EditTodos: {
-      screen: EditTodos,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Todos" navigation={navigation} />,
-      }),
-    },
-    StartTour: {
-      screen: StartTour,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Tour" navigation={navigation} />,
-      }),
-    },
-    PlanChat: {
-      screen: PlanChat,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Chat" navigation={navigation} />,
+        header: (
+          <Header
+            title="Settings"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
+        ),
+        headerTransparent: false,
       }),
     },
 
