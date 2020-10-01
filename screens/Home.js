@@ -54,6 +54,11 @@ const images = [
     url:
       "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
   },
+  {
+    id: 6,
+    url:
+      "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
+  },
 ];
 
 class Home extends React.Component {
@@ -348,13 +353,13 @@ class Home extends React.Component {
 
   renderStories = () => {
     return (
-      <Block flex={1}>
+      <Block flex={1.5}>
         <Block
           style={{
             marginTop: 10,
             borderRadius: 20,
             backgroundColor: "#ededed",
-            height: height * 0.12,
+            height: height * 0.1,
             width: width * 0.95,
           }}
         >
