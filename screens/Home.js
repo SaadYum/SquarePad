@@ -24,8 +24,37 @@ import {
   AdMobRewarded,
   setTestDeviceIDAsync,
 } from "expo-ads-admob";
+import StoryThumb from "../components/StoryThumb";
 
-const { width } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
+
+const images = [
+  {
+    id: 1,
+    url:
+      "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
+  },
+  {
+    id: 2,
+    url:
+      "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
+  },
+  {
+    id: 3,
+    url:
+      "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
+  },
+  {
+    id: 4,
+    url:
+      "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
+  },
+  {
+    id: 5,
+    url:
+      "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
+  },
+];
 
 class Home extends React.Component {
   user = firebase.auth().currentUser;
@@ -317,9 +346,32 @@ class Home extends React.Component {
     // this.getMorePosts();
   };
 
+  renderStories = () => {
+    return (
+      <Block flex={1}>
+        <Block
+          style={{
+            marginTop: 10,
+            borderRadius: 20,
+            backgroundColor: "#ededed",
+            height: height * 0.12,
+            width: width * 0.95,
+          }}
+        >
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            data={images}
+            renderItem={({ item }) => <StoryThumb avatar={item.url} />}
+            keyExtractor={(item) => item.id}
+          />
+        </Block>
+      </Block>
+    );
+  };
   renderArticles = () => {
     return (
-      <Block>
+      <Block flex={8}>
         {!this.state.posts.length > 0 && (
           <Block style={{ paddingTop: 30 }}>
             <ActivityIndicator size="large" />
@@ -345,19 +397,20 @@ class Home extends React.Component {
   render() {
     return (
       <Block flex center style={styles.home}>
-        <AdMobBanner
+        {/* <AdMobBanner
           bannerSize="banner"
           adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
           servePersonalizedAds // true or false
           // onDidFailToReceiveAdWithError={this.bannerError}
-        />
-        <PublisherBanner
+          />
+          <PublisherBanner
           bannerSize="banner"
           adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
           // onDidFailToReceiveAdWithError={this.bannerError}
           onAdMobDispatchAppEvent={this.adMobEvent}
-        />
-        {this.renderArticles()}
+        /> */}
+        {this.renderStories()}
+        {/* {this.renderArticles()} */}
       </Block>
     );
   }

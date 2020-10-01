@@ -809,7 +809,7 @@ export const SignedIn = createBottomTabNavigator(
   {
     order: ["Home", "Chat", "Add", "Groups", "Profile"],
     animationEnabled: true,
-    initialRouteName: "Chat",
+    initialRouteName: "Home",
     navigationOptions: {
       tabBarVisible: true,
     },
