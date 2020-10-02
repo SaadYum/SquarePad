@@ -7,7 +7,7 @@ import {
   AsyncStorage,
   RefreshControl,
 } from "react-native";
-import { Block, theme } from "galio-framework";
+import { Block, Icon, theme } from "galio-framework";
 
 import { Card, Button } from "../components";
 // import articles from '../constants/articles';
@@ -16,7 +16,7 @@ import * as firebase from "firebase";
 import * as Location from "expo-location";
 
 import { Images } from "../constants";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import {
   AdMobBanner,
   AdMobInterstitial,
@@ -351,10 +351,13 @@ class Home extends React.Component {
     // this.getMorePosts();
   };
 
+  addStory = () => {};
+
   renderStories = () => {
     return (
       <Block flex={1.5}>
         <Block
+          row
           style={{
             marginTop: 10,
             borderRadius: 20,
@@ -363,6 +366,28 @@ class Home extends React.Component {
             width: width * 0.95,
           }}
         >
+          <Block style={{ margin: 5 }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#ebebeb",
+                height: 40,
+                width: 40,
+                borderRadius: 20,
+                alignItems: "center",
+              }}
+              onPress={() => {
+                this.addStory();
+              }}
+            >
+              <Icon
+                size={30}
+                name="plus"
+                family="antdesign"
+                style={{ top: 12 }}
+                color={"black"}
+              />
+            </TouchableOpacity>
+          </Block>
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal={true}
@@ -415,7 +440,7 @@ class Home extends React.Component {
           onAdMobDispatchAppEvent={this.adMobEvent}
         /> */}
         {this.renderStories()}
-        {this.renderArticles()}
+        {/* {this.renderArticles()} */}
       </Block>
     );
   }
