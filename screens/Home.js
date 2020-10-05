@@ -8,6 +8,8 @@ import {
   RefreshControl,
 } from "react-native";
 import { Block, Icon, theme } from "galio-framework";
+import * as ImagePicker from "expo-image-picker";
+import * as Permissions from "expo-permissions";
 
 import { Card, Button } from "../components";
 // import articles from '../constants/articles';
@@ -86,6 +88,7 @@ class Home extends React.Component {
     getNextPosts: false,
     lastDocArr: [],
     xyz: [],
+    stories: [],
   };
 
   // componentWillMount= () =>{
@@ -153,14 +156,73 @@ class Home extends React.Component {
   // Get all the users the current user is following
   getFollowedUsers = async () => {
     let users = [];
-    await this.firestoreFollowingRef.get().then((querySnapshot) => {
-      querySnapshot.forEach((docSnap) => {
-        users.push(docSnap.id);
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(this.user.uid)
+      .collection("following")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((docSnap) => {
+          users.push(docSnap.id);
+        });
+        // this.setState({followedUsers: users});
       });
-      // this.setState({followedUsers: users});
-    });
     this.setState({ followedUsers: users });
     // console.log(this.state.followedUsers);
+  };
+
+  getFollowingStories = async () => {
+    let users = this.state.followedUsers;
+    let stories = [];
+    for (const user of users) {
+      let userObj = new Object();
+      userObj.user = user;
+
+      // console.log("Avatar:" +this.state.avatar)
+      await this.firestoreUsersRef
+        .doc(user)
+        .get()
+        .then(async (document) => {
+          let userData = document.data();
+          let fetchTimestamp = new Date().getTime();
+
+          let storiesArr = [];
+          this.firestoreUsersRef
+            .doc(user)
+            .collection("stories")
+            .where("expireTimestamp", ">=", fetchTimestamp)
+            .get()
+            .then((docs) => {
+              if (docs.size > 0) {
+                let userStoryObj = {
+                  userId: user,
+                  username: userData.username,
+                  userAvatar: userData.profilePic,
+                };
+                docs.forEach((doc) => {
+                  let story = doc.data();
+                  let uploadTime = story.currentTimestamp;
+
+                  let timestampDiff = fetchTimestamp - uploadTime;
+                  timestampDiff = timestampDiff / 3600000;
+                  timestampDiff = Math.round(timestampDiff);
+
+                  let storyObj = {
+                    content: story.downloadURL,
+                    uploaded: timestampDiff + "hours before",
+                  };
+
+                  storiesArr.push(storyObj);
+                  userStoryObj.stories = storiesArr;
+                });
+                stories.push(userStoryObj);
+              }
+            });
+        });
+    }
+    this.setState({ stories: stories });
+    console.log(stories);
   };
 
   // Get all posts of each user and push them in a same array
@@ -168,7 +230,7 @@ class Home extends React.Component {
     // 1. Get all the users the current user is following
     await this.getFollowedUsers().then(async () => {
       // console.log(this.state.followedUsers);
-
+      this.getFollowingStories();
       let users = this.state.followedUsers;
       let allPosts = [];
       let lastDocArr = [];
@@ -179,47 +241,48 @@ class Home extends React.Component {
         let userObj = new Object();
         userObj.user = user;
 
-        await this.getProfilePic(user).then(async () => {
-          // console.log("Avatar:" +this.state.avatar)
-          await this.firestoreUsersRef
-            .doc(user)
-            .get()
-            .then(async (document) => {
-              this.setState({ userData: document.data() });
-
-              const startQuery = this.firestorePostRef
-                .doc(user)
-                .collection("userPosts")
-                .orderBy("time", "desc");
-
-              await startQuery.get().then(async (snapshot) => {
-                var lastVisible = snapshot.docs[snapshot.docs.length - 1];
-                //  this.setState({lastDoc: lastVisible.id});
-                userObj.lastDoc = lastVisible.data().postId;
-
-                lastDocArr.push(userObj);
-                snapshot.forEach((doc) => {
-                  let article = {
-                    username: this.state.userData.username,
-                    userId: user,
-                    title: "post",
-                    avatar: this.state.avatar,
-                    image: doc.data().image,
-                    cta: "cta",
-                    caption: doc.data().caption,
-                    location: doc.data().location.locationName,
-                    postId: doc.data().postId,
-                    timeStamp: doc.data().time,
-                    horizontal: true,
-                  };
-                  allPosts.push(article);
-                });
-              });
-
-              // console.log(lastDocArr)
-              this.setState({ posts: allPosts });
+        // console.log("Avatar:" +this.state.avatar)
+        await this.firestoreUsersRef
+          .doc(user)
+          .get()
+          .then(async (document) => {
+            this.setState({
+              userData: document.data(),
+              avatar: document.data().profilePic,
             });
-        });
+
+            const startQuery = this.firestorePostRef
+              .doc(user)
+              .collection("userPosts")
+              .orderBy("time", "desc");
+
+            await startQuery.get().then(async (snapshot) => {
+              var lastVisible = snapshot.docs[snapshot.docs.length - 1];
+              //  this.setState({lastDoc: lastVisible.id});
+              userObj.lastDoc = lastVisible.data().postId;
+
+              lastDocArr.push(userObj);
+              snapshot.forEach((doc) => {
+                let article = {
+                  username: this.state.userData.username,
+                  userId: user,
+                  title: "post",
+                  avatar: this.state.avatar,
+                  image: doc.data().image,
+                  cta: "cta",
+                  caption: doc.data().caption,
+                  location: doc.data().location.locationName,
+                  postId: doc.data().postId,
+                  timeStamp: doc.data().time,
+                  horizontal: true,
+                };
+                allPosts.push(article);
+              });
+            });
+
+            // console.log(lastDocArr)
+            this.setState({ posts: allPosts });
+          });
       }
       this.setState({ xyz: lastDocArr });
     });
@@ -351,7 +414,71 @@ class Home extends React.Component {
     // this.getMorePosts();
   };
 
-  addStory = () => {};
+  storeStoryInFirestore = (downloadURL, currentTimestamp, expireTimestamp) => {
+    // console.log(downloadURL, currentTimestamp, expireTimestamp);
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(this.user.uid)
+      .collection("stories")
+      .add({
+        downloadURL: downloadURL,
+        currentTimestamp: currentTimestamp,
+        expireTimestamp: expireTimestamp,
+      })
+      .then(() => {
+        alert("Story Saved!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  uploadStory = async (uri, imageName, currentTimestamp, expireTimestamp) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    const ref = firebase
+      .storage()
+      .ref()
+      .child("storyPics/" + imageName);
+
+    // ref.getDownloadURL().then((url) => {
+    // console.log(url);
+    ref
+      .put(blob)
+      .then(() => {
+        ref.getDownloadURL().then((url) => {
+          this.storeStoryInFirestore(url, currentTimestamp, expireTimestamp);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // });
+  };
+
+  addStory = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [9, 16],
+      quality: 0.1,
+    });
+
+    let uploadTimestamp = new Date().getTime();
+    let expireTimestamp = uploadTimestamp + 86400000;
+    // console.log(result);
+
+    if (!result.cancelled) {
+      this.uploadStory(
+        result.uri,
+        "(" + this.user.uid + ")" + uploadTimestamp,
+        uploadTimestamp,
+        expireTimestamp
+      );
+    }
+  };
 
   renderStories = () => {
     return (
@@ -391,8 +518,10 @@ class Home extends React.Component {
           <FlatList
             showsHorizontalScrollIndicator={false}
             horizontal={true}
-            data={images}
-            renderItem={({ item }) => <StoryThumb avatar={item.url} />}
+            data={this.state.stories}
+            renderItem={({ item }) => (
+              <StoryThumb avatar={item.userAvatar} stories={item} viewed />
+            )}
             keyExtractor={(item) => item.id}
           />
         </Block>
@@ -440,7 +569,7 @@ class Home extends React.Component {
           onAdMobDispatchAppEvent={this.adMobEvent}
         /> */}
         {this.renderStories()}
-        {/* {this.renderArticles()} */}
+        {this.renderArticles()}
       </Block>
     );
   }

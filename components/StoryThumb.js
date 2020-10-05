@@ -1,4 +1,4 @@
-import { Block } from "galio-framework";
+import { Block, Icon } from "galio-framework";
 import React, { Component, PureComponent } from "react";
 import {
   View,
@@ -7,9 +7,11 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  Dimensions,
 } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import Story from "./Story";
+const { width, height } = Dimensions.get("screen");
 
 class StoryThumb extends PureComponent {
   state = {
@@ -35,16 +37,40 @@ class StoryThumb extends PureComponent {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 {/* <Text style={styles.modalText}>Hello World!</Text> */}
-
-                <Story />
-                <TouchableHighlight
-                  style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-                  onPress={() => {
-                    this.toggleModal();
-                  }}
-                >
-                  <Text style={styles.textStyle}>Hide Modal</Text>
-                </TouchableHighlight>
+                <Block row>
+                  <Image
+                    source={{
+                      uri: this.props.avatar,
+                    }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                    }}
+                  />
+                  <Text style={{ paddingTop: 10, paddingLeft: 10 }}>
+                    {this.props.stories.username}
+                  </Text>
+                  <TouchableHighlight
+                    style={{
+                      ...styles.openButton,
+                      marginLeft: width * 0.4,
+                      backgroundColor: "#ebebeb",
+                      marginBottom: 10,
+                    }}
+                    onPress={() => {
+                      this.toggleModal();
+                    }}
+                  >
+                    <Icon
+                      family="antdesign"
+                      size={20}
+                      name="close"
+                      color={"black"}
+                    />
+                  </TouchableHighlight>
+                </Block>
+                <Story stories={this.props.stories} />
               </View>
             </View>
           </Modal>
@@ -92,11 +118,11 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
-    margin: 20,
+    margin: 10,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
+    padding: 20,
+    // alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

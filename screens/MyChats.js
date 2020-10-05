@@ -35,9 +35,9 @@ class MyChats extends Component {
 
   firestoreFollowingRef = firebase
     .firestore()
-    .collection("following")
+    .collection("users")
     .doc(this.userId)
-    .collection("userFollowing");
+    .collection("following");
   state = {
     followedUsers: [],
     users: [],

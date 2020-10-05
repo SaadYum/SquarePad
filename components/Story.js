@@ -42,17 +42,29 @@ class Story extends PureComponent {
   }
   _renderItem({ item, index }) {
     return (
-      <Image
-        source={{
-          uri:
-            "https://s3.ap-south-1.amazonaws.com/hsdreams1/pins/2019/01/big/7d1e5e0b31a650b9314023921b9e161b.jpeg",
-        }}
-        style={{
-          width: width * 0.7,
-          height: height * 0.7,
-          borderRadius: 30,
-        }}
-      />
+      <Block>
+        <Image
+          source={{
+            uri: item.content,
+          }}
+          style={{
+            width: width * 0.7,
+            height: height * 0.7,
+            borderRadius: 30,
+          }}
+        />
+        <View
+          style={{
+            backgroundColor: "#ebebeb",
+            borderRadius: 20,
+            height: 25,
+            marginTop: 10,
+            alignItems: "center",
+          }}
+        >
+          <Text>{item.uploaded}</Text>
+        </View>
+      </Block>
       //   <View
       //     style={{
       //       backgroundColor: "floralwhite",
@@ -69,6 +81,7 @@ class Story extends PureComponent {
     );
   }
   render() {
+    let { stories } = this.props.stories;
     return (
       <Block>
         <Block>
@@ -79,7 +92,7 @@ class Story extends PureComponent {
             <Carousel
               layout={"default"}
               ref={(ref) => (this.carousel = ref)}
-              data={this.state.carouselItems}
+              data={stories}
               sliderWidth={300}
               itemWidth={300}
               renderItem={this._renderItem}

@@ -12,6 +12,7 @@ import {
   CreateUser,
   SigninUser,
   isUserSignedIn,
+  logOut,
 } from "../services/auth.service";
 import { Block, Checkbox, Text, theme } from "galio-framework";
 import * as firebase from "firebase";
@@ -69,7 +70,8 @@ class ProfileSettings extends React.Component {
             <TouchableOpacity
               style={{ paddingTop: 15 }}
               onPress={() => {
-                this.props.navigation.navigate("Update");
+                logOut();
+                this.props.navigation.navigate("SignedOut");
               }}
             >
               <Block row>
@@ -80,7 +82,7 @@ class ProfileSettings extends React.Component {
                   color={"black"}
                 />
 
-                <Text> Log Out</Text>
+                <Text> LogOut</Text>
               </Block>
             </TouchableOpacity>
           </Block>

@@ -37,9 +37,9 @@ class Profile extends React.Component {
     .doc(this.user.uid);
   firestoreFollowingRef = firebase
     .firestore()
-    .collection("following")
+    .collection("users")
     .doc(this.user.uid)
-    .collection("userFollowing");
+    .collection("following");
   firestoreFollowedByRef = firebase
     .firestore()
     .collection("users")
@@ -144,14 +144,7 @@ class Profile extends React.Component {
         this.uploadProfilePicture(
           result.uri,
           "(" + this.user.uid + ")ProfilePic"
-        )
-          .then(() => {
-            this.setState({ profilePic: result.uri });
-            this.storeProfilePictureToken(result.uri);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        );
       }
     } else if (selection == "Remove") {
       // 1. Firebase removal
@@ -220,27 +213,24 @@ class Profile extends React.Component {
       // }
       // else  // checking if its present on firebase storage then put it in local storage and state
       // {
-      const firebaseProfilePic = firebase
-        .storage()
-        .ref()
-        .child("profilePics/(" + this.user.uid + ")ProfilePic");
-      firebaseProfilePic
-        .getDownloadURL()
-        .then((url) => {
-          console.log(url);
-          // Inserting into an State and local storage incase new device:
-          this.setState({ profilePic: url });
-          this.storeProfilePictureToken(url);
-        })
-        .catch((error) => {
-          // Handle any errors
-          switch (error.code) {
-            case "storage/object-not-found":
-              // File doesn't exist
-              this.setState({ profilePic: Images.ProfilePicture });
-              break;
+
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(this.user.uid)
+        .get()
+        .then((doc) => {
+          let pp = doc.data().profilePic;
+          if (typeof pp != "undefined") {
+            this.setState({ profilePic: pp });
+            this.storeProfilePictureToken(pp);
+          } else {
+            this.setState({ profilePic: Images.ProfilePicture });
           }
-          alert(error);
+        })
+        .catch((err) => {
+          console.log(err);
+          this.setState({ profilePic: Images.ProfilePicture });
         });
       // }
     } catch (error) {
@@ -270,7 +260,30 @@ class Profile extends React.Component {
       .storage()
       .ref()
       .child("profilePics/" + imageName);
-    return ref.put(blob);
+    ref
+      .put(blob)
+      .then(() => {
+        ref
+          .getDownloadURL()
+          .then((url) => {
+            console.log(url);
+            firebase.firestore().collection("users").doc(this.user.uid).set(
+              {
+                profilePic: url,
+              },
+              { merge: true }
+            );
+            return url;
+          })
+          .then((url) => {
+            this.setState({ profilePic: url });
+            this.storeProfilePictureToken(url);
+          })
+          .catch((err) => {
+            alert(err);
+          });
+      })
+      .catch((err) => alert(err));
   };
 
   getRealTimeUpdates = () => {
