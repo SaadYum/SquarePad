@@ -257,11 +257,13 @@ class Home extends React.Component {
               .orderBy("time", "desc");
 
             await startQuery.get().then(async (snapshot) => {
-              var lastVisible = snapshot.docs[snapshot.docs.length - 1];
-              //  this.setState({lastDoc: lastVisible.id});
-              userObj.lastDoc = lastVisible.data().postId;
+              if (snapshot.size > 0) {
+                var lastVisible = snapshot.docs[snapshot.docs.length - 1];
+                //  this.setState({lastDoc: lastVisible.id});
+                userObj.lastDoc = lastVisible.data().postId;
 
-              lastDocArr.push(userObj);
+                lastDocArr.push(userObj);
+              }
               snapshot.forEach((doc) => {
                 let article = {
                   username: this.state.userData.username,
