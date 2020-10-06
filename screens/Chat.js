@@ -14,8 +14,9 @@ import * as firebase from "firebase";
 import argonTheme from "../constants/Theme";
 import { Images } from "../constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, Actions } from "react-native-gifted-chat";
 import { CreateUser } from "../services/auth.service";
+import CustomActions from "./CustomActions";
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
@@ -243,16 +244,38 @@ class Chat extends React.Component {
     }
   };
 
+  renderCustomActions(props) {
+    if (Platform.OS === "ios") {
+      return <CustomActions {...props} />;
+    }
+    const options = {
+      "Action 1": (props) => {
+        alert("option 1");
+      },
+      "Action 2": (props) => {
+        alert("option 2");
+      },
+      Cancel: () => {},
+    };
+    return <Actions {...props} options={options} />;
+  }
+
   render() {
     return (
       <Block flex>
+        {/* <Block flex={8}> */}
         <GiftedChat
           messages={this.state.messages}
           onSend={this.onSend}
+          renderActions={this.renderCustomActions}
           user={{
             _id: this.currentUserId,
           }}
         />
+        {/* </Block> */}
+        {/* <Block flex={1}>
+          <Text>new dssdsj</Text>
+        </Block> */}
       </Block>
     );
   }

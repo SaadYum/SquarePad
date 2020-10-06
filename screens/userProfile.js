@@ -44,9 +44,9 @@ class userProfile extends React.Component {
 
   firestoreFollowingRef = firebase
     .firestore()
-    .collection("following")
+    .collection("users")
     .doc(this.state.currentUser)
-    .collection("userFollowing");
+    .collection("following");
   firestoreFollowedByRef = firebase
     .firestore()
     .collection("users")
@@ -63,24 +63,22 @@ class userProfile extends React.Component {
   };
 
   getProfilePic = () => {
-    const firebaseProfilePic = firebase
-      .storage()
-      .ref()
-      .child("profilePics/(" + this.state.currentUser + ")ProfilePic");
-    firebaseProfilePic
-      .getDownloadURL()
-      .then((url) => {
-        this.setState({ profilePic: url });
-      })
-      .catch((error) => {
-        // Handle any errors
-        switch (error.code) {
-          case "storage/object-not-found":
-            // File doesn't exist
-            this.setState({ profilePic: Images.ProfilePicture });
-            break;
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(this.state.currentUser)
+      .get()
+      .then((doc) => {
+        let profilePic = doc.data().profilePic;
+        if (typeof profilePic != "undefined") {
+          this.setState({ profilePic: profilePic });
+        } else {
+          this.setState({ profilePic: Images.ProfilePicture });
         }
-        alert(error);
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({ profilePic: Images.ProfilePicture });
       });
   };
 
@@ -152,9 +150,9 @@ class userProfile extends React.Component {
   checkFollow = () => {
     firebase
       .firestore()
-      .collection("following")
+      .collection("users")
       .doc(firebase.auth().currentUser.uid)
-      .collection("userFollowing")
+      .collection("following")
       .doc(this.state.currentUser)
       .get()
       .then((snapshot) => {

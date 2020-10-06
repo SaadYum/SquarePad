@@ -318,7 +318,7 @@ class Home extends React.Component {
       console.log("NEW ARRAY:            " + lastDocArr);
 
       let currentUserLastDoc = currentUserObj.lastDoc;
-      console.log("Current USer Last DOc is: " + currentUserLastDoc);
+      console.log("Current User Last Doc is: " + currentUserLastDoc);
       await this.getProfilePic(user).then(async () => {
         // console.log("Avatar:" +this.state.avatar)
         await this.firestoreUsersRef
