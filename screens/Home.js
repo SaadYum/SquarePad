@@ -7,7 +7,7 @@ import {
   AsyncStorage,
   RefreshControl,
 } from "react-native";
-import { Block, Icon, theme } from "galio-framework";
+import { Block, Icon, theme, Text } from "galio-framework";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 
@@ -517,15 +517,19 @@ class Home extends React.Component {
               />
             </TouchableOpacity>
           </Block>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            data={this.state.stories}
-            renderItem={({ item }) => (
-              <StoryThumb avatar={item.userAvatar} stories={item} viewed />
-            )}
-            keyExtractor={(item) => item.id}
-          />
+          {this.state.stories.length > 0 ? (
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              data={this.state.stories}
+              renderItem={({ item }) => (
+                <StoryThumb avatar={item.userAvatar} stories={item} viewed />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          ) : (
+            <Text style={{ marginTop: 25 }}>No recent stories!</Text>
+          )}
         </Block>
       </Block>
     );

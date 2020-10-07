@@ -724,15 +724,15 @@ export const SignedIn = createBottomTabNavigator(
         ),
       },
     },
-    Explore: {
-      screen: ExploreStack,
-      navigationOptions: {
-        // tabBarLabel: 'Home',
-        tabBarIcon: ({ tintColor }) => (
-          <Icon family="Feather" size={20} color={tintColor} name="map" />
-        ),
-      },
-    },
+    // Explore: {
+    //   screen: ExploreStack,
+    //   navigationOptions: {
+    //     // tabBarLabel: 'Home',
+    //     tabBarIcon: ({ tintColor }) => (
+    //       <Icon family="Feather" size={20} color={tintColor} name="map" />
+    //     ),
+    //   },
+    // },
 
     Profile: {
       screen: ProfileStack,
@@ -777,7 +777,7 @@ export const SignedIn = createBottomTabNavigator(
         ),
       },
     },
-    SearchUser: {
+    Explore: {
       screen: SearchUserStack,
       navigationOptions: {
         // tabBarLabel: 'Add Post',
@@ -807,7 +807,7 @@ export const SignedIn = createBottomTabNavigator(
     // },
   },
   {
-    order: ["Home", "Chat", "Add", "SearchUser", "Profile"],
+    order: ["Home", "Explore", "Add", "Profile"],
     animationEnabled: true,
     initialRouteName: "Home",
     navigationOptions: {

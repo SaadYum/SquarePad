@@ -41,6 +41,7 @@ class Chat extends React.Component {
       firestoreMessagesRef: "",
     };
     this.onSend = this.onSend.bind(this);
+    this.faltu = this.faltu.bind(this);
   }
 
   getMembersData = async (callback) => {
@@ -148,7 +149,7 @@ class Chat extends React.Component {
   listenMessages = () => {
     let newMessages = [];
     // let firestoreMessagesRef = this.state.firestoreMessagesRef;
-    this.firestoreMessagesRef.where("type", "==", 0).onSnapshot((snap) => {
+    this.firestoreMessagesRef.onSnapshot((snap) => {
       snap.docChanges().forEach((change) => {
         if (change.type == "added") {
           newMessages.push(change.doc.data());
@@ -181,25 +182,54 @@ class Chat extends React.Component {
     this.uploadMessage(messages[0]);
   };
 
+  uploadMediaMessage = (url) => {
+    let message = {
+      // text: "image",
+      image: url,
+      type: 1,
+    };
+    this.uploadMessage(message);
+  };
+
   uploadMessage = (message) => {
     let timestamp = new Date().getTime().toString();
     message._id = timestamp;
-    // let firestoreMessagesRef = this.state.firestoreMessagesRef;
-    this.firestoreMessagesRef
-      .doc(timestamp)
-      .set({
-        content: message.text,
-        idFrom: this.currentUserId,
-        idTo: this.secondUserId,
-        timestamp: timestamp,
-        type: 0,
-      })
-      .then(() => {
-        console.log("Uploaded");
-      })
-      .catch(() => {
-        alert("Message not sent. Try Again!");
-      });
+
+    if (message.type == 1) {
+      this.firestoreMessagesRef
+        .doc(timestamp)
+        .set({
+          // content: message.text,
+          idFrom: this.currentUserId,
+          idTo: this.secondUserId,
+          timestamp: timestamp,
+          image: message.image,
+          type: 1,
+        })
+        .then(() => {
+          console.log("Uploaded");
+        })
+        .catch(() => {
+          alert("Message not sent. Try Again!");
+        });
+    } else {
+      // let firestoreMessagesRef = this.state.firestoreMessagesRef;
+      this.firestoreMessagesRef
+        .doc(timestamp)
+        .set({
+          content: message.text,
+          idFrom: this.currentUserId,
+          idTo: this.secondUserId,
+          timestamp: timestamp,
+          type: 0,
+        })
+        .then(() => {
+          console.log("Uploaded");
+        })
+        .catch(() => {
+          alert("Message not sent. Try Again!");
+        });
+    }
   };
 
   onReceive = (message) => {
@@ -243,21 +273,33 @@ class Chat extends React.Component {
       });
     }
   };
+  faltu = () => {
+    alert("faltu");
+  };
 
+  somefunc = () => {
+    console.log("jdjsddjksjsnnj");
+  };
   renderCustomActions(props) {
     if (Platform.OS === "ios") {
-      return <CustomActions {...props} />;
+      return (
+        <CustomActions
+          {...props}
+          uploadMediaMessage={props.uploadMediaMessage}
+          onSend={props.onSend}
+        />
+      );
     }
-    const options = {
-      "Action 1": (props) => {
-        alert("option 1");
-      },
-      "Action 2": (props) => {
-        alert("option 2");
-      },
-      Cancel: () => {},
-    };
-    return <Actions {...props} options={options} />;
+    // const options = {
+    //   "Action 1": (props) => {
+    //     alert("option 1");
+    //   },
+    //   "Action 2": (props) => {
+    //     alert("option 2");
+    //   },
+    //   Cancel: () => {},
+    // };
+    // return <Actions {...props} options={options} />;
   }
 
   render() {
@@ -267,6 +309,7 @@ class Chat extends React.Component {
         <GiftedChat
           messages={this.state.messages}
           onSend={this.onSend}
+          uploadMediaMessage={this.uploadMediaMessage}
           renderActions={this.renderCustomActions}
           user={{
             _id: this.currentUserId,

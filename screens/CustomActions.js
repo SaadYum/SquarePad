@@ -30,7 +30,8 @@ export default class CustomActions extends React.Component {
   }
 
   onActionsPress() {
-    const options = ["Choose From Library", "Send Location", "Cancel"];
+    const options = ["Choose From Library", "Cancel"];
+    // const options = ["Choose From Library", "Send Location", "Cancel"];
     const cancelButtonIndex = options.length - 1;
     this.context.actionSheet().showActionSheetWithOptions(
       {
@@ -43,20 +44,20 @@ export default class CustomActions extends React.Component {
             // this.setModalVisible(true);
             this.choosePicture();
             break;
-          case 1:
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                this.props.onSend({
-                  location: {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                  },
-                });
-              },
-              (error) => alert(error.message),
-              { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-            );
-            break;
+          //   case 1:
+          //     navigator.geolocation.getCurrentPosition(
+          //       (position) => {
+          //         this.props.onSend({
+          //           location: {
+          //             latitude: position.coords.latitude,
+          //             longitude: position.coords.longitude,
+          //           },
+          //         });
+          //       },
+          //       (error) => alert(error.message),
+          //       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+          //     );
+          //     break;
           default:
         }
       }
@@ -146,11 +147,13 @@ export default class CustomActions extends React.Component {
     // console.log(result);
 
     if (!result.cancelled) {
-      // this.uploadMessagePicture(
-      //   result.uri,
-      //   "(" + this.user.uid + ")ProfilePic"
-      // );
-      alert("dddd");
+      let timestamp = new Date().getTime().toString();
+
+      this.uploadMessagePicture(
+        result.uri,
+        "(" + firebase.auth().currentUser.uid + ")" + timestamp
+      );
+      //   alert("dddd");
     }
   };
 
@@ -161,29 +164,21 @@ export default class CustomActions extends React.Component {
     const ref = firebase
       .storage()
       .ref()
-      .child("messagePics/" + imageName);
+      .child("chatPics/" + imageName);
     ref
       .put(blob)
       .then(() => {
-        ref
-          .getDownloadURL()
-          .then((url) => {
-            console.log(url);
-            firebase.firestore().collection("users").doc(this.user.uid).set(
-              {
-                profilePic: url,
-              },
-              { merge: true }
-            );
-            return url;
-          })
-          .then((url) => {
-            this.setState({ profilePic: url });
-            this.storeProfilePictureToken(url);
-          })
-          .catch((err) => {
-            alert(err);
-          });
+        ref.getDownloadURL().then((url) => {
+          this.props.uploadMediaMessage(url);
+          // console.log(url);
+          // firebase.firestore().collection("users").doc(this.user.uid).set(
+          //   {
+          //     profilePic: url,
+          //   },
+          //   { merge: true }
+          // );
+          // return url;
+        });
       })
       .catch((err) => alert(err));
   };
