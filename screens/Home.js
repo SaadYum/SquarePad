@@ -406,6 +406,7 @@ class Home extends React.Component {
     this.setState({ refreshing: true });
 
     this.getFollowingPosts().then(() => {
+      this.getFollowingStories();
       this.setState({ refreshing: false });
     });
   };

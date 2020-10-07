@@ -354,7 +354,7 @@ class Profile extends React.Component {
         style={{ width, marginTop: "5%" }}
       >
         <Block style={styles.profileCard}>
-          <Block middle flex row space="evenly" style={{ paddingBottom: 24 }}>
+          <Block middle flex row space="evenly" style={{ paddingBottom: 50 }}>
             <Block middle flex={1} style={styles.avatarContainer}>
               <TouchableOpacity onLongPress={this.chooseProfilePicture}>
                 <Image

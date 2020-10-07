@@ -259,6 +259,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     elevation: 1,
     overflow: "hidden",
+    marginTop: 50,
   },
   socialConnect: {
     backgroundColor: argonTheme.COLORS.WHITE,

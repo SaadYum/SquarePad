@@ -1,10 +1,11 @@
 import React from "react";
 import { Modal, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import PropTypes from "prop-types";
-import CameraRollPicker from "react-native-camera-roll-picker";
+// import CameraRollPicker from "react-native-camera-roll-picker";
 import NavBar, { NavButton, NavButtonText, NavTitle } from "react-native-nav";
 import * as ImagePicker from "expo-image-picker";
 import * as firebase from "firebase";
+import { Icon } from "galio-framework";
 
 export default class CustomActions extends React.Component {
   constructor(props) {
@@ -130,9 +131,17 @@ export default class CustomActions extends React.Component {
       return this.props.icon();
     }
     return (
-      <View style={[styles.wrapper, this.props.wrapperStyle]}>
-        <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
-      </View>
+      // <View style={[styles.wrapper, this.props.wrapperStyle]}>
+      //   <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
+      // </View>
+
+      <Icon
+        size={30}
+        name="images"
+        family="entypo"
+        // style={{ top: 12 }}
+        color={"black"}
+      />
     );
   }
 
@@ -214,8 +223,8 @@ export default class CustomActions extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: 26,
-    height: 26,
+    width: 40,
+    height: 30,
     marginLeft: 10,
     marginBottom: 10,
   },

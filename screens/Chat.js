@@ -41,7 +41,6 @@ class Chat extends React.Component {
       firestoreMessagesRef: "",
     };
     this.onSend = this.onSend.bind(this);
-    this.faltu = this.faltu.bind(this);
   }
 
   getMembersData = async (callback) => {
@@ -273,23 +272,15 @@ class Chat extends React.Component {
       });
     }
   };
-  faltu = () => {
-    alert("faltu");
-  };
-
-  somefunc = () => {
-    console.log("jdjsddjksjsnnj");
-  };
   renderCustomActions(props) {
-    if (Platform.OS === "ios") {
-      return (
-        <CustomActions
-          {...props}
-          uploadMediaMessage={props.uploadMediaMessage}
-          onSend={props.onSend}
-        />
-      );
-    }
+    return (
+      <CustomActions
+        {...props}
+        uploadMediaMessage={props.uploadMediaMessage}
+        onSend={props.onSend}
+      />
+    );
+
     // const options = {
     //   "Action 1": (props) => {
     //     alert("option 1");
@@ -304,7 +295,7 @@ class Chat extends React.Component {
 
   render() {
     return (
-      <Block flex>
+      <Block style={{ paddingBottom: 10 }} flex>
         {/* <Block flex={8}> */}
         <GiftedChat
           messages={this.state.messages}

@@ -19,6 +19,7 @@ class StoryThumb extends PureComponent {
   };
 
   toggleModal = () => {
+    console.log("closef");
     this.setState({ modalVisible: !this.state.modalVisible });
   };
 
@@ -31,7 +32,7 @@ class StoryThumb extends PureComponent {
             transparent={true}
             visible={this.state.modalVisible}
             onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
+              alert("Modal has been closed.");
             }}
           >
             <View style={styles.centeredView}>
@@ -51,7 +52,7 @@ class StoryThumb extends PureComponent {
                   <Text style={{ paddingTop: 10, paddingLeft: 10 }}>
                     {this.props.stories.username}
                   </Text>
-                  <TouchableHighlight
+                  <TouchableOpacity
                     style={{
                       ...styles.openButton,
                       marginLeft: width * 0.4,
@@ -68,7 +69,7 @@ class StoryThumb extends PureComponent {
                       name="close"
                       color={"black"}
                     />
-                  </TouchableHighlight>
+                  </TouchableOpacity>
                 </Block>
                 <Story stories={this.props.stories} />
               </View>
