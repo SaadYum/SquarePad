@@ -1,12 +1,9 @@
 {
   "expo": {
-    "name": "Travy App",
-    "slug": "travy-app",
+    "name": "SquarePad App",
+    "slug": "squarepad-app",
     "privacy": "public",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,21 +15,24 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
-      }
+      },
+
+      "bundleIdentifier": "com.yourcompany.yourappname",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
         }
-      }
+      },
+      "package": "com.yourcompany.yourappname",
+      "versionCode": 1
     },
     "description": ""
   }
