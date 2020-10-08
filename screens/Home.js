@@ -490,9 +490,9 @@ class Home extends React.Component {
           row
           style={{
             marginTop: 10,
-            borderRadius: 20,
+            borderRadius: 35,
             backgroundColor: "#ededed",
-            height: height * 0.1,
+            height: 70,
             width: width * 0.95,
           }}
         >
