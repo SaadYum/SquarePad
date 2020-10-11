@@ -264,7 +264,7 @@ class userProfile extends React.Component {
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ width, marginTop: "10%" }}
+        style={{ width, marginTop: "5%" }}
       >
         <Block style={styles.profileCard}>
           <Block middle row space="evenly" style={{ paddingBottom: 24 }}>
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     // position: "relative",
     padding: theme.SIZES.BASE,
     marginHorizontal: theme.SIZES.BASE,
-    marginTop: 65,
+    marginTop: Platform.OS === "ios" ? 65 : 10,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     backgroundColor: theme.COLORS.WHITE,

@@ -80,6 +80,8 @@ class Home extends React.Component {
 
   state = {
     posts: [],
+    currentUsername: "",
+    currentAvatar: "",
     userData: {},
     followedUsers: [],
     avatar: Images.ProfilePicture,
@@ -89,6 +91,7 @@ class Home extends React.Component {
     lastDocArr: [],
     xyz: [],
     stories: [],
+    myStories: [],
   };
 
   // componentWillMount= () =>{
@@ -172,6 +175,61 @@ class Home extends React.Component {
     // console.log(this.state.followedUsers);
   };
 
+  getMyStories = async () => {
+    let userId = this.user.uid;
+    let username,
+      userAvatar = null;
+    let storiesArr = [];
+    let stories = [];
+    this.firestoreUsersRef
+      .doc(this.user.uid)
+      .get()
+      .then((doc) => {
+        let data = doc.data();
+        username = data.username;
+        userAvatar = data.profilePic;
+        this.setState({ currentUsername: username, currentAvatar: userAvatar });
+      })
+      .then(() => {
+        let fetchTimestamp = new Date().getTime();
+        this.firestoreUsersRef
+          .doc(this.user.uid)
+          .collection("stories")
+          .where("expireTimestamp", ">=", fetchTimestamp)
+          .onSnapshot((docs) => {
+            if (docs.size > 0) {
+              let myStoryObj = {
+                userId: userId,
+                username: username,
+                userAvatar: userAvatar,
+              };
+              docs.forEach((doc) => {
+                let story = doc.data();
+                let uploadTime = story.currentTimestamp;
+
+                let timestampDiff = fetchTimestamp - uploadTime;
+                timestampDiff = timestampDiff / 3600000;
+                timestampDiff = Math.round(timestampDiff);
+
+                let storyObj = {
+                  content: story.downloadURL,
+                  uploaded: timestampDiff + "hours before",
+                };
+
+                storiesArr.push(storyObj);
+                myStoryObj.stories = storiesArr;
+              });
+              stories.push(myStoryObj);
+            }
+          });
+
+        this.setState({ myStories: stories }, () =>
+          console.log("sbs", this.state.myStories)
+        );
+      })
+      .catch((err) => alert(err));
+  };
+
   getFollowingStories = async () => {
     let users = this.state.followedUsers;
     let stories = [];
@@ -230,7 +288,9 @@ class Home extends React.Component {
     // 1. Get all the users the current user is following
     await this.getFollowedUsers().then(async () => {
       // console.log(this.state.followedUsers);
+      this.getMyStories();
       this.getFollowingStories();
+
       let users = this.state.followedUsers;
       let allPosts = [];
       let lastDocArr = [];
@@ -496,28 +556,41 @@ class Home extends React.Component {
             width: width * 0.95,
           }}
         >
-          <Block style={{ margin: 5 }}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#ebebeb",
-                height: 40,
-                width: 40,
-                borderRadius: 20,
-                alignItems: "center",
-              }}
-              onPress={() => {
-                this.addStory();
-              }}
-            >
-              <Icon
-                size={30}
-                name="plus"
-                family="antdesign"
-                style={{ top: 12 }}
-                color={"black"}
+          {!this.state.myStories.length > 0 ? (
+            <Block style={{ margin: 5 }}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#ebebeb",
+                  height: 40,
+                  width: 40,
+                  borderRadius: 20,
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  this.addStory();
+                }}
+              >
+                <Icon
+                  size={30}
+                  name="plus"
+                  family="antdesign"
+                  style={{ top: 12 }}
+                  color={"black"}
+                />
+              </TouchableOpacity>
+            </Block>
+          ) : (
+            <Block style={{ marginLeft: 5 }}>
+              <StoryThumb
+                avatar={this.state.currentAvatar}
+                stories={this.state.myStories[0]}
+                viewed
+                addStory={this.addStory}
+                myStory
               />
-            </TouchableOpacity>
-          </Block>
+            </Block>
+          )}
+
           {this.state.stories.length > 0 ? (
             <FlatList
               showsHorizontalScrollIndicator={false}
@@ -537,7 +610,7 @@ class Home extends React.Component {
   };
   renderArticles = () => {
     return (
-      <Block flex={8}>
+      <Block flex={8} style={{ marginTop: 5 }}>
         {!this.state.posts.length > 0 && (
           <Block style={{ paddingTop: 30 }}>
             <ActivityIndicator size="large" />
@@ -563,19 +636,20 @@ class Home extends React.Component {
   render() {
     return (
       <Block flex center style={styles.home}>
-        {/* <AdMobBanner
+        {this.renderStories()}
+        <Block style={{ marginTop: 10 }} />
+        <AdMobBanner
           bannerSize="banner"
           adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
           servePersonalizedAds // true or false
           // onDidFailToReceiveAdWithError={this.bannerError}
-          />
-          <PublisherBanner
+        />
+        {/* <PublisherBanner
           bannerSize="banner"
           adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
           // onDidFailToReceiveAdWithError={this.bannerError}
           onAdMobDispatchAppEvent={this.adMobEvent}
         /> */}
-        {this.renderStories()}
         {this.renderArticles()}
       </Block>
     );

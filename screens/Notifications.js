@@ -347,7 +347,18 @@ class Notifications extends React.Component {
     return (
       <Block center style={{ marginTop: 10, height: height * 0.9 }}>
         {this.state.notifications.length == 0 && (
-          <ActivityIndicator size="large" />
+          // <ActivityIndicator size="large" />
+          <Block
+            style={{
+              backgroundColor: "#ebebeb",
+              borderRadius: 20,
+              // width: width * 0.7,
+              padding: 10,
+            }}
+          >
+            <Text> No notifications yet.</Text>
+            <Text> This feature is under construction.</Text>
+          </Block>
         )}
 
         <FlatList

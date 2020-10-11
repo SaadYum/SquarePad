@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     // position: "relative",
     padding: theme.SIZES.BASE,
     marginHorizontal: theme.SIZES.BASE,
-    marginTop: 65,
+    marginTop: Platform.OS === "ios" ? 80 : 10,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     backgroundColor: theme.COLORS.WHITE,

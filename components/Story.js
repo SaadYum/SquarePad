@@ -42,7 +42,7 @@ class Story extends PureComponent {
   }
   _renderItem({ item, index }) {
     return (
-      <Block>
+      <Block center>
         <Image
           source={{
             uri: item.content,

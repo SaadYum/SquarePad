@@ -75,7 +75,12 @@ class Login extends React.Component {
                 Log In with
               </Text>
               <Block row style={{ marginTop: theme.SIZES.BASE }}>
-                <Button style={{ ...styles.socialButtons, marginRight: 30 }}>
+                <Button
+                  style={{ ...styles.socialButtons, marginRight: 30 }}
+                  onPress={() => {
+                    alert("This feature is under construction.");
+                  }}
+                >
                   <Block row>
                     <Icon
                       name="logo-facebook"
@@ -87,7 +92,12 @@ class Login extends React.Component {
                     <Text style={styles.socialTextButtons}>FACEBOOK</Text>
                   </Block>
                 </Button>
-                <Button style={styles.socialButtons}>
+                <Button
+                  style={styles.socialButtons}
+                  onPress={() => {
+                    alert("This feature is under construction.");
+                  }}
+                >
                   <Block row>
                     <Icon
                       name="logo-google"

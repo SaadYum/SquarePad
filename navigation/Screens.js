@@ -697,12 +697,17 @@ export const SignedIn = createBottomTabNavigator(
         ),
       },
     },
-    Chat: {
+    Chats: {
       screen: ChatStack,
       navigationOptions: {
         // tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="AntDesign" size={20} color={tintColor} name="home" />
+          <Icon
+            family="AntDesign"
+            size={20}
+            color={tintColor}
+            name="message1"
+          />
         ),
       },
     },
@@ -807,7 +812,7 @@ export const SignedIn = createBottomTabNavigator(
     // },
   },
   {
-    order: ["Home", "Explore", "Add", "Profile"],
+    order: ["Home", "Explore", "Add", "Chats", "Profile"],
     animationEnabled: true,
     initialRouteName: "Home",
     navigationOptions: {

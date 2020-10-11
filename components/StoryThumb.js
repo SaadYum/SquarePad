@@ -19,7 +19,6 @@ class StoryThumb extends PureComponent {
   };
 
   toggleModal = () => {
-    console.log("closef");
     this.setState({ modalVisible: !this.state.modalVisible });
   };
 
@@ -87,6 +86,11 @@ class StoryThumb extends PureComponent {
           <TouchableOpacity
             onPress={() => {
               this.toggleModal();
+            }}
+            onLongPress={() => {
+              if (this.props.myStory) {
+                this.props.addStory();
+              }
             }}
           >
             <Image

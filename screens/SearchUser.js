@@ -105,6 +105,8 @@ class SearchUser extends React.Component {
             marginHorizontal: 16,
             paddingBottom: 12,
             paddingTop: 12,
+            backgroundColor: "#ebebeb",
+            borderRadius: 20,
           }}
         >
           <Block>
@@ -126,7 +128,7 @@ class SearchUser extends React.Component {
                 })
               }
             >
-              <Text size={16} style={styles.cardUser}>
+              <Text size={20} style={styles.cardUser}>
                 {this.state.searchWord}
               </Text>
             </TouchableWithoutFeedback>
@@ -214,9 +216,9 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     borderWidth: 0,
   },
   cardUser: {

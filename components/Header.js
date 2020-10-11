@@ -160,11 +160,11 @@ class Header extends React.Component {
             navigation={navigation}
             isWhite={white}
           />,
-          <ChatButton
-            key="chat-home"
-            navigation={navigation}
-            isWhite={white}
-          />,
+          // <ChatButton
+          //   key="chat-home"
+          //   navigation={navigation}
+          //   isWhite={white}
+          // />,
         ];
       case "Deals":
         return [
@@ -338,6 +338,9 @@ class Header extends React.Component {
       );
     }
   };
+  renderLeft = () => {
+    return <Block></Block>;
+  };
   render() {
     const {
       back,
@@ -368,29 +371,56 @@ class Header extends React.Component {
       bgColor && { backgroundColor: bgColor },
     ];
 
-    return (
-      <Block style={headerStyles}>
-        <NavBar
-          back={back}
-          title={title}
-          style={navbarStyles}
-          transparent={transparent}
-          right={this.renderRight()}
-          rightStyle={{ alignItems: "center" }}
-          onLeftPress={() => {
-            this.props.navigation.goBack();
-          }}
-          leftStyle={{ paddingVertical: 12, flex: 0.2 }}
-          titleStyle={[
-            styles.title,
-            { color: argonTheme.COLORS[white ? "WHITE" : "HEADER"] },
-            titleColor && { color: titleColor },
-          ]}
-          {...props}
-        />
-        {this.renderHeader()}
-      </Block>
-    );
+    if (back) {
+      return (
+        <Block style={headerStyles}>
+          <NavBar
+            back={back}
+            title={title}
+            style={navbarStyles}
+            transparent={transparent}
+            right={this.renderRight()}
+            rightStyle={{ alignItems: "center" }}
+            onLeftPress={() => {
+              this.props.navigation.goBack();
+            }}
+            leftStyle={{ paddingVertical: 12, flex: 0.2 }}
+            titleStyle={[
+              styles.title,
+              { color: argonTheme.COLORS[white ? "WHITE" : "HEADER"] },
+              titleColor && { color: titleColor },
+            ]}
+            {...props}
+          />
+          {this.renderHeader()}
+        </Block>
+      );
+    } else {
+      return (
+        <Block style={headerStyles}>
+          <NavBar
+            back={back}
+            title={title}
+            style={navbarStyles}
+            transparent={transparent}
+            right={this.renderRight()}
+            left={this.renderLeft()}
+            rightStyle={{ alignItems: "center" }}
+            onLeftPress={() => {
+              this.props.navigation.goBack();
+            }}
+            leftStyle={{ paddingVertical: 12, flex: 0.2 }}
+            titleStyle={[
+              styles.title,
+              { color: argonTheme.COLORS[white ? "WHITE" : "HEADER"] },
+              titleColor && { color: titleColor },
+            ]}
+            {...props}
+          />
+          {this.renderHeader()}
+        </Block>
+      );
+    }
   }
 }
 

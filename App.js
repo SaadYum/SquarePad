@@ -172,29 +172,29 @@ export default class App extends React.Component {
       // console.disableYellowBox= true;
       let userData = await AsyncStorage.getItem("userData");
       let data = JSON.parse(userData);
-      // firebase.auth().onAuthStateChanged((user) => {
-      //   if (user) {
-      //     this.setState({ userId: user.uid });
-      //     this.getLocationAsync();
-      //     // console.log("MY user", this.state.userId);
-      //     this.setState({ signedIn: true });
-      //     firebase
-      //       .firestore()
-      //       .collection("users")
-      //       .doc(user.uid)
-      //       .get()
-      //       .then((doc) => {
-      //         if (doc.data().interested) {
-      //           this.setState({ interestsComplete: true });
-      //         } else {
-      //           this.setState({ interestsComplete: false });
-      //         }
-      //       });
-      //     this.listenPlanNotifications(firebase.auth().currentUser.uid);
-      //   } else {
-      //     this.setState({ signedIn: false });
-      //   }
-      // });
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          this.setState({ userId: user.uid });
+          this.getLocationAsync();
+          // console.log("MY user", this.state.userId);
+          this.setState({ signedIn: true });
+          // firebase
+          //   .firestore()
+          //   .collection("users")
+          //   .doc(user.uid)
+          //   .get()
+          //   .then((doc) => {
+          //     if (doc.data().interested) {
+          //       this.setState({ interestsComplete: true });
+          //     } else {
+          //       this.setState({ interestsComplete: false });
+          //     }
+          //   });
+          // this.listenPlanNotifications(firebase.auth().currentUser.uid);
+        } else {
+          this.setState({ signedIn: false });
+        }
+      });
 
       // //  console.log(data);
       // if (data!=null){
