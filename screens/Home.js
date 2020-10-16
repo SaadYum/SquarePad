@@ -103,7 +103,7 @@ class Home extends React.Component {
 
   componentDidMount = () => {
     // this.getProfilePic();
-    this.getLocationAsync();
+    // this.getLocationAsync();
     this.getFollowingPosts();
   };
 

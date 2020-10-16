@@ -361,18 +361,51 @@ class userProfile extends React.Component {
                       <TouchableOpacity
                         key={postIndex}
                         onPress={() => {
-                          // console.log(postIndex);
-                          this.props.navigation.navigate("Post", {
-                            username: this.state.username,
-                            title: "",
-                            avatar: this.state.profilePic,
-                            image: post.image,
-                            cta: "View article",
-                            caption: post.caption,
-                            location: post.location.locationName,
-                            postId: post.postId,
-                            userId: this.state.currentUser,
-                          });
+                          let route  = this.props.navigation.state.routeName;
+
+                          if(route == "Profile"){
+
+                            
+                            // console.log(postIndex);
+                            this.props.navigation.navigate("Post", {
+                              username: this.state.username,
+                              title: "",
+                              avatar: this.state.profilePic,
+                              image: post.image,
+                              cta: "View article",
+                              caption: post.caption,
+                              location: post.location.locationName,
+                              postId: post.postId,
+                              userId: this.state.currentUser,
+                            });
+                          }else if(route == "userProfile"){
+                            // console.log(postIndex);
+                            this.props.navigation.navigate("userPost", {
+                              username: this.state.username,
+                              title: "",
+                              avatar: this.state.profilePic,
+                              image: post.image,
+                              cta: "View article",
+                              caption: post.caption,
+                              location: post.location.locationName,
+                              postId: post.postId,
+                              userId: this.state.currentUser,
+                            });
+
+                          }else{
+                              this.props.navigation.navigate("searchUserPost", {
+                                username: this.state.username,
+                                title: "",
+                                avatar: this.state.profilePic,
+                                image: post.image,
+                                cta: "View article",
+                                caption: post.caption,
+                                location: post.location.locationName,
+                                postId: post.postId,
+                                userId: this.state.currentUser,
+                              });
+
+                          }
                         }}
                       >
                         <Image

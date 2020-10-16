@@ -432,17 +432,22 @@ class Profile extends React.Component {
           </Block>
           <Block style={styles.info}>
             <Block row space="between">
+              
+              <TouchableOpacity onPress={()=>{this.props.navigation.navigate("MyFollowers")}}>
+
               <Block middle>
+              
                 <Text
                   bold
                   size={12}
                   color="#525F7F"
                   style={{ marginBottom: 4 }}
-                >
+                  >
                   {this.state.followedByUsers}
                 </Text>
                 <Text size={12}>Followers</Text>
               </Block>
+                  </TouchableOpacity>
               <Block middle>
                 <Text
                   bold

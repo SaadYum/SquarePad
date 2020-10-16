@@ -65,6 +65,7 @@ import SharePlan from "../screens/SharePlan";
 import PlanDetails from "../screens/PlanDetails";
 import PlanJoinRequests from "../screens/PlanJoinRequests";
 import ProfileSettings from "../screens/ProfileSettings";
+import MyFollowers from "../screens/MyFollowers";
 
 const TabBarComponent = (props) => <BottomTabBar {...props} />;
 
@@ -396,6 +397,12 @@ const ProfileStack = createStackNavigator(
         header: <Header title="Interests" navigation={navigation} />,
       }),
     },
+    MyFollowers: {
+      screen: MyFollowers,
+      navigationOptions: ({ navigation }) => ({
+        header: <Header title="Followers" navigation={navigation} />,
+      }),
+    },
   },
   {
     cardStyle: { backgroundColor: "#FFFFFF" },
@@ -463,7 +470,7 @@ const SearchUserStack = createStackNavigator({
       headerTransparent: false,
     }),
   },
-  userPost: {
+  searchUserPost: {
     screen: Post,
     navigationOptions: ({ navigation }) => ({
       header: (
@@ -472,7 +479,7 @@ const SearchUserStack = createStackNavigator({
       headerTransparent: false,
     }),
   },
-  userProfile: {
+  searchUserProfile: {
     screen: userProfile,
     navigationOptions: ({ navigation }) => ({
       header: (
@@ -632,51 +639,75 @@ const HomeStack = createStackNavigator(
         headerTransparent: false,
       }),
     },
-    NotificationPlans: {
-      screen: MyPlans,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="My Plans" navigation={navigation} />,
-      }),
-    },
-    PlanDetails: {
-      screen: PlanDetails,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Details" navigation={navigation} />,
-      }),
-    },
-    EditPlan: {
-      screen: EditPlan,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Edit Plan" navigation={navigation} />,
-      }),
-    },
+    // NotificationPlans: {
+    //   screen: MyPlans,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="My Plans" navigation={navigation} />,
+    //   }),
+    // },
+    // PlanDetails: {
+    //   screen: PlanDetails,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="Details" navigation={navigation} />,
+    //   }),
+    // },
+    // EditPlan: {
+    //   screen: EditPlan,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="Edit Plan" navigation={navigation} />,
+    //   }),
+    // },
 
-    EditSpot: {
-      screen: EditSpot,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="EditSpot" navigation={navigation} />,
-      }),
-    },
-    EditMembers: {
-      screen: EditMembers,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Members" navigation={navigation} />,
-      }),
-    },
-    EditTodos: {
-      screen: EditTodos,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Todos" navigation={navigation} />,
-      }),
-    },
-    StartTour: {
-      screen: StartTour,
+    // EditSpot: {
+    //   screen: EditSpot,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="EditSpot" navigation={navigation} />,
+    //   }),
+    // },
+    // EditMembers: {
+    //   screen: EditMembers,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="Members" navigation={navigation} />,
+    //   }),
+    // },
+    // EditTodos: {
+    //   screen: EditTodos,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="Todos" navigation={navigation} />,
+    //   }),
+    // },
+    // StartTour: {
+    //   screen: StartTour,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: (
+    //       <Header transparent back title="Tour" navigation={navigation} />
+    //     ),
+    //   }),
+    // },
+    
+    userProfile: {
+      screen: userProfile,
       navigationOptions: ({ navigation }) => ({
         header: (
-          <Header transparent back title="Tour" navigation={navigation} />
+          <Header
+            title="Profile"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
         ),
+        headerTransparent: true,
       }),
     },
+  userPost: {
+    screen: Post,
+    navigationOptions: ({ navigation }) => ({
+      header: (
+        <Header title="Post" back iconColor={"#FFF"} navigation={navigation} />
+      ),
+      headerTransparent: false,
+    }),
+  },
   },
   {
     cardStyle: {

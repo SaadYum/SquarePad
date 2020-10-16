@@ -57,7 +57,8 @@ class SearchUser extends React.Component {
           if (documentSnapshot.id != this.user.uid) {
             users.push(documentSnapshot.data());
             //   console.log(documentSnapshot.id);
-            this.setState({ foundUser: documentSnapshot.id, found: true });
+            this.setState({ foundUser: documentSnapshot.id, found: true, profilePic: documentSnapshot.data().profilePic });
+            
           }
           // console.log(this.state.foundUser)
           // console.log(users);
@@ -73,12 +74,12 @@ class SearchUser extends React.Component {
             found: false,
           });
         } else {
-          let profilePic = this.storageRef.child(
-            "profilePics/(" + this.state.foundUser + ")ProfilePic"
-          );
-          profilePic.getDownloadURL().then((url) => {
-            this.setState({ profilePic: url });
-          });
+          // let profilePic = this.storageRef.child(
+          //   "profilePics/(" + this.state.foundUser + ")ProfilePic"
+          // );
+          // profilePic.getDownloadURL().then((url) => {
+          //   this.setState({ profilePic: url });
+          // });
           this.setState({ searchResults: users });
           console.log(this.state.searchResults);
         }
@@ -112,7 +113,7 @@ class SearchUser extends React.Component {
           <Block>
             <TouchableWithoutFeedback
               onPress={() =>
-                navigation.navigate("userProfile", {
+                navigation.navigate("searchUserProfile", {
                   userId: this.state.foundUser,
                 })
               }
@@ -123,7 +124,7 @@ class SearchUser extends React.Component {
           <Block>
             <TouchableWithoutFeedback
               onPress={() =>
-                navigation.navigate("userProfile", {
+                navigation.navigate("searchUserProfile", {
                   userId: this.state.foundUser,
                 })
               }
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   cardUser: {
-    fontFamily: "Arial",
+    // fontFamily: "Arial",
     paddingTop: 8,
     paddingLeft: 4,
     color: theme.COLORS.BLACK,

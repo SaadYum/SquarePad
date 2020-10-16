@@ -22,7 +22,7 @@
         "googleMapsApiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
       },
 
-      "bundleIdentifier": "com.yourcompany.yourappname",
+      "bundleIdentifier": "com.squarepad.squarepadApp",
       "buildNumber": "1.0.0"
     },
     "android": {
@@ -31,7 +31,7 @@
           "apiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
         }
       },
-      "package": "com.yourcompany.yourappname",
+      "package": "com.squarepad.squarepadApp",
       "versionCode": 1
     },
     "description": ""

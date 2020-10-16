@@ -175,7 +175,7 @@ export default class App extends React.Component {
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           this.setState({ userId: user.uid });
-          this.getLocationAsync();
+          // this.getLocationAsync();
           // console.log("MY user", this.state.userId);
           this.setState({ signedIn: true });
           // firebase
