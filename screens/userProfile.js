@@ -9,7 +9,7 @@ import {
   Alert,
   AsyncStorage,
 } from "react-native";
-import { Block, Text, theme } from "galio-framework";
+import { Block, Switch, Text, theme } from "galio-framework";
 
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
@@ -40,6 +40,7 @@ class userProfile extends React.Component {
     followedUsers: 0,
     followedByUsers: 0,
     publicProfile: false,
+    closeFriend: false
   };
 
   firestoreFollowingRef = firebase
@@ -145,6 +146,7 @@ class userProfile extends React.Component {
     this.getPermissionAsync();
 
     this.checkFollow();
+    this.checkCloseFriend();
   }
 
   checkFollow = () => {
@@ -164,6 +166,23 @@ class userProfile extends React.Component {
       });
   };
 
+  checkCloseFriend = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("closeFriends")
+      .doc(this.state.currentUser)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          this.setState({ closeFriend: true });
+        } else {
+          this.setState({ closeFriend: false });
+        }
+      });
+  };
+
   handleFollow = () => {
     if (!this.state.following) {
       console.log(
@@ -171,11 +190,13 @@ class userProfile extends React.Component {
           " is following " +
           this.state.currentUser
       );
+      this.setState({ following: true });
+        
       firebase
         .firestore()
-        .collection("following")
+        .collection("users")
         .doc(firebase.auth().currentUser.uid)
-        .collection("userFollowing")
+        .collection("following")
         .doc(this.state.currentUser)
         .set({
           userId: this.state.currentUser,
@@ -191,20 +212,76 @@ class userProfile extends React.Component {
               userId: firebase.auth().currentUser.uid,
             });
           this.setState({ following: true });
+        }).catch((err)=>{
+          this.setState({ following: false });
+
         });
     } else {
       console.log("UNFOLLOWED");
       firebase
         .firestore()
-        .collection("following")
+        .collection("users")
         .doc(firebase.auth().currentUser.uid)
-        .collection("userFollowing")
+        .collection("following")
         .doc(this.state.currentUser)
         .delete()
         .then(() => {
           this.setState({ following: false });
-        });
+        }).catch(err=>{
+          this.setState({ following: true });
+
+        })
     }
+  };
+
+
+  handleCloseFriend = () => {
+    if (!this.state.closeFriend) {
+      console.log(
+        firebase.auth().currentUser.uid +
+          " is closeFriends with " +
+          this.state.currentUser
+      );
+      this.setState({ closeFriend: true },()=>{
+        
+        
+        firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("closeFriends")
+        .doc(this.state.currentUser)
+        .set({
+          userId: this.state.currentUser,
+        }).then(()=>{
+                          this.setState({ closeFriend: true })
+
+        })
+        .catch(err=>
+          {
+                              this.setState({ closeFriend:false })
+
+          })
+      });
+    } else {
+      
+      this.setState({ closeFriend: false }, ()=>{
+
+        firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .collection("closeFriends")
+        .doc(this.state.currentUser)
+        .delete()
+        .then(() => {
+          this.setState({ closeFriend: false });
+        }).catch(err=>{
+          this.setState({ closeFriend: true });
+
+        })
+      });
+      }
   };
 
   renderFollow = () => {
@@ -213,13 +290,14 @@ class userProfile extends React.Component {
         <Block>
           <Button
             small
-            shadowless={false}
+            shadowless={true}
             icon="edit"
             iconFamily="AntDesign"
             style={{
               marginTop: 20,
-              backgroundColor: "#3BBDE3",
-              borderRadius: 10,
+              backgroundColor: "#e6e6e6",
+              borderRadius: 25,
+              height: 40
             }}
             onPress={this.handleFollow}
           >
@@ -232,13 +310,14 @@ class userProfile extends React.Component {
         <Block>
           <Button
             small
-            shadowless={false}
+            shadowless={true}
             icon="edit"
             iconFamily="AntDesign"
             style={{
               marginTop: 20,
-              backgroundColor: "tomato",
-              borderRadius: 10,
+              backgroundColor: "#ff6a4e",
+              borderRadius: 25,
+              height: 40
             }}
             onPress={this.handleFollow}
           >
@@ -247,6 +326,22 @@ class userProfile extends React.Component {
         </Block>
       );
     }
+  };
+  renderCloseFriends = () => {
+      return (
+        <Block style={{backgroundColor:"whitesmoke", borderRadius:20, paddingBottom: 10, marginTop: 10}}>
+            <Block center style={{ marginTop: 5 }}>
+              <Text> Close Friends </Text>
+              <Switch
+                style={{ marginTop: 5 }}
+                color={"#e6e6e6"}
+                value={this.state.closeFriend}
+                onValueChange={() => this.handleCloseFriend()}
+              />
+            </Block>
+        </Block>
+      );
+    
   };
 
   getPermissionAsync = async () => {
@@ -278,7 +373,11 @@ class userProfile extends React.Component {
               </TouchableOpacity>
             </Block>
 
+          <Block >
+
             {this.renderFollow()}
+            {this.renderCloseFriends()}
+          </Block>
           </Block>
           <Block style={styles.info}>
             <Block row space="between">
@@ -352,7 +451,7 @@ class userProfile extends React.Component {
                       View all
                     </Button> */}
             </Block>
-            {(this.state.following || !this.state.publicProfile) && (
+            {((this.state.following && !this.state.publicProfile) || this.state.publicProfile) && (
               <Block>
                 <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
                   <Block row space="between" style={{ flexWrap: "wrap" }}>
@@ -421,7 +520,7 @@ class userProfile extends React.Component {
               </Block>
             )}
 
-            {(!this.state.following || !this.state.publicProfile) && (
+            {(!this.state.following && !this.state.publicProfile) && (
               <Text h5 style={{ alignSelf: "center" }}>
                 Private profile!
               </Text>

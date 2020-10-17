@@ -36,7 +36,7 @@ const groupFiller = require("../assets/imgs/groupFiller.jpg");
 // internet imgs
 
 const ProfilePicture =
-  "https://firebasestorage.googleapis.com/v0/b/travycomsats.appspot.com/o/profilePics%2FprofilePic2.PNG?alt=media&token=72bc785f-8b04-40d4-9270-141ff2254892";
+  "https://firebasestorage.googleapis.com/v0/b/square-pad-3a630.appspot.com/o/profilePics%2Funisex-avatar.png?alt=media&token=fc7a4de4-f4d0-45b3-8bb6-960a8d21dd3d";
 const galleryIcon =
   "https://cdn0.iconfinder.com/data/icons/communication-bold-part-2/100/bold-67-512.png";
 const placesBaseImage =

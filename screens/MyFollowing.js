@@ -28,22 +28,22 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 2;
 // const userID = firebase.auth().currentUser.uid;
 
-class MyFollowers extends React.Component {
+class MyFollowing extends React.Component {
   
 state = {
-    followers: [],
+    followings: [],
     currUser: ""
 }
 componentDidMount = ()=>{
-    this.getFollowers()
+    this.getfollowings()
 }
 
-    getFollowers = ()=>{
-        let followers = []
+    getfollowings = ()=>{
+        let followings = []
 
         firebase.firestore().collection("users")
         .doc(firebase.auth().currentUser.uid)
-        .collection("followedBy").get().then((docs)=>{
+        .collection("following").get().then((docs)=>{
             
             docs.forEach((doc)=>{
             firebase.firestore().collection("users").doc(doc.id)
@@ -54,24 +54,24 @@ componentDidMount = ()=>{
                     username: doc.data().username
                 }
 
-                followers.push(userObj)
-                this.setState({followers: followers});
+                followings.push(userObj)
+                this.setState({followings: followings});
 
             })
             })
         }).catch(err=>alert(err))
     }
 
-    renderUserItem = (follower) => {
+    renderUserItem = (following) => {
         const { navigation } = this.props;
           return (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("followerProfile", {
-                  userId: follower.userId,
-                })
-              }
-            >
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("followingProfile", {
+                    userId: following.userId,
+                  })
+                }
+              >
             <Block
               row
               
@@ -87,10 +87,10 @@ componentDidMount = ()=>{
               }}
             >
               <Block row>
-                        <Image source={{ uri: follower.profilePic }} style={styles.avatar} />
+                        <Image source={{ uri: following.profilePic }} style={styles.avatar} />
 
                   <Text size={20} style={styles.cardUser}>
-                    {follower.username}
+                    {following.username}
                   </Text>
               </Block>
             </Block>
@@ -100,7 +100,7 @@ componentDidMount = ()=>{
     
 
 
-renderFollowers = ()=>{
+renderfollowings = ()=>{
   
      
 return(
@@ -123,7 +123,7 @@ showsVerticalScrollIndicator={false}
 //   onRefresh={this.onRefresh}
 //   />
 // }
-data={this.state.followers}
+data={this.state.followings}
 renderItem={({ item }) => this.renderUserItem(item)}
 keyExtractor={(item) => item.postId}
 />
@@ -137,11 +137,11 @@ keyExtractor={(item) => item.postId}
 
 
   render() {
-    let { followers } = this.state;
-    console.log(followers)
+    let { followings } = this.state;
+    console.log(followings)
     return (
     <Block style={{marginTop: 10}}>
-      {followers.length>0?this.renderFollowers():
+      {followings.length>0?this.renderfollowings():
       <Block
       middle
       style={{
@@ -154,7 +154,7 @@ keyExtractor={(item) => item.postId}
       }}
       >
 
-      <Text>No Followers</Text></Block>}
+      <Text>No followings</Text></Block>}
           </Block>)
           
 }}
@@ -177,4 +177,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default MyFollowers;
+export default MyFollowing;

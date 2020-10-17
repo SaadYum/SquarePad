@@ -66,6 +66,7 @@ import PlanDetails from "../screens/PlanDetails";
 import PlanJoinRequests from "../screens/PlanJoinRequests";
 import ProfileSettings from "../screens/ProfileSettings";
 import MyFollowers from "../screens/MyFollowers";
+import MyFollowing from "../screens/MyFollowing";
 
 const TabBarComponent = (props) => <BottomTabBar {...props} />;
 
@@ -400,7 +401,41 @@ const ProfileStack = createStackNavigator(
     MyFollowers: {
       screen: MyFollowers,
       navigationOptions: ({ navigation }) => ({
-        header: <Header title="Followers" navigation={navigation} />,
+        header: <Header back title="Followers" navigation={navigation} />,
+      }),
+    },
+    MyFollowing: {
+      screen: MyFollowing,
+      navigationOptions: ({ navigation }) => ({
+        header: <Header back title="Following" navigation={navigation} />,
+      }),
+    },
+    followerProfile: {
+      screen: userProfile,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            title="Profile"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
+        ),
+        headerTransparent: true,
+      }),
+    },
+    followingProfile: {
+      screen: userProfile,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            title="Profile"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
+        ),
+        headerTransparent: true,
       }),
     },
   },

@@ -155,16 +155,24 @@ class Profile extends React.Component {
         .delete()
         .then(async () => {
           // 2. State Removal
-          this.setState({ profilePic: Images.ProfilePicture });
 
-          // 3. Local Storage Removal
-          await AsyncStorage.removeItem("userProflePic(" + this.user.uid + ")")
-            .then(() => {
-              alert("Your Profile Photo has been removed!");
+            firebase.firestore().collection("users").doc(this.user.uid)
+            .set({
+              profilePic: Images.ProfilePicture
+            },{merge: true}).then(async()=>{
+
+              
+              this.setState({ profilePic: Images.ProfilePicture });
+              
+              // 3. Local Storage Removal
+              await AsyncStorage.removeItem("userProflePic(" + this.user.uid + ")")
+              .then(() => {
+                alert("Your Profile Photo has been removed!");
+              })
+              .catch((error) => {
+                alert(error);
+              })
             })
-            .catch((error) => {
-              alert(error);
-            });
         })
         .catch((error) => {
           alert(error);
@@ -222,6 +230,7 @@ class Profile extends React.Component {
         .then((doc) => {
           let pp = doc.data().profilePic;
           if (typeof pp != "undefined") {
+            // alert("not")
             this.setState({ profilePic: pp });
             this.storeProfilePictureToken(pp);
           } else {
@@ -448,6 +457,8 @@ class Profile extends React.Component {
                 <Text size={12}>Followers</Text>
               </Block>
                   </TouchableOpacity>
+                  <TouchableOpacity onPress={()=>{this.props.navigation.navigate("MyFollowing")}}>
+
               <Block middle>
                 <Text
                   bold
@@ -459,6 +470,7 @@ class Profile extends React.Component {
                 </Text>
                 <Text size={12}>Following</Text>
               </Block>
+              </TouchableOpacity>
               <Block middle>
                 <Text
                   bold
