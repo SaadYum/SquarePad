@@ -880,7 +880,7 @@ export const SignedIn = createBottomTabNavigator(
   {
     order: ["Home", "Explore", "Add", "Chats", "Profile"],
     animationEnabled: true,
-    initialRouteName: "Home",
+    initialRouteName: "Chats",
     navigationOptions: {
       tabBarVisible: true,
     },
