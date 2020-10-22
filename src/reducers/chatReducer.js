@@ -2,15 +2,23 @@ import { testAction } from '../actions/chatActions';
 import {TEST_ACTION} from '../actions/types';
 
 
+
+
+
+
 const initialState = {
 
     chats: [{data:"one"},{data:"one"},{data:"one"}],
     testData: "Something"
 }
 
+
+
  const chatReducer = (state = initialState, action ) =>{
 
     switch(action.type){
+        case FETCH_CHATS:
+            return action.payload;
         case TEST_ACTION:
             return{
                 ...state,

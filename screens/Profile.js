@@ -338,7 +338,7 @@ class Profile extends React.Component {
     //   this.setState({posts: res.map(post => post)});
 
     // }).catch((err)=>{console.log(err)})
-    this.getLocationAsync();
+    // this.getLocationAsync();
     this.getPosts();
 
     this.getRealTimeUpdates();
