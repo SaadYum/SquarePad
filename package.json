@@ -57,7 +57,10 @@
     "react-navigation": "^3.11.1",
     "react-navigation-tabs": "^2.4.1",
     "react-redux": "^7.2.1",
+    "react-redux-firebase": "^3.7.0",
     "redux": "^4.0.5",
+    "redux-firestore": "^0.14.0",
+    "redux-thunk": "^2.3.0",
     "rn-bottom-drawer": "^1.4.3"
   },
   "devDependencies": {

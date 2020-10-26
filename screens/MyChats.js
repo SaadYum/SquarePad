@@ -26,7 +26,7 @@ import {
   TouchableHighlight,
 } from "react-native-gesture-handler";
 import { ListItem } from "react-native-elements";
-import { testAction } from "../src/actions/chatActions";
+import { fetchChats, testAction } from "../src/actions/chatActions";
 
 
 
@@ -40,7 +40,8 @@ const mapStateToProps = (state) =>{
 
 const mapDispatchToProps = (dispatch) =>{
   return{
-    addChat: (data)=> dispatch(testAction(data))  
+    addChat: (data)=> dispatch(testAction(data)),
+    fetchChats: ()=> dispatch(fetchChats())
   }
 }
 
@@ -293,11 +294,11 @@ class MyChats extends Component {
   UNSAFE_componentWillMount = () => {
     this.getFollowedUsers();
     // console.log("REDUCERSSSSSSSSS: ", this.props.chats)
+    this.props.fetchChats();
   };
 
   componentDidMount = () => {
     console.log("REDUCERSSSSSSSSS: ", this.props.chats)
-
   };
 
   render() {

@@ -208,7 +208,10 @@ export default class SquarePadApp extends React.Component {
       //   this.setState({signedIn: false})
       // }
       // this.sendPushNotification();
-      this.registerForPushNotificationsAsync();
+
+
+
+      // this.registerForPushNotificationsAsync();
     } catch (error) {
       console.log("Something went wrong", error);
     }
