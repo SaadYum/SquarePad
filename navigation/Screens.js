@@ -719,7 +719,7 @@ const HomeStack = createStackNavigator(
     //     ),
     //   }),
     // },
-    
+
     userProfile: {
       screen: userProfile,
       navigationOptions: ({ navigation }) => ({
@@ -734,15 +734,20 @@ const HomeStack = createStackNavigator(
         headerTransparent: true,
       }),
     },
-  userPost: {
-    screen: Post,
-    navigationOptions: ({ navigation }) => ({
-      header: (
-        <Header title="Post" back iconColor={"#FFF"} navigation={navigation} />
-      ),
-      headerTransparent: false,
-    }),
-  },
+    userPost: {
+      screen: Post,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            title="Post"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
+        ),
+        headerTransparent: false,
+      }),
+    },
   },
   {
     cardStyle: {
@@ -880,7 +885,7 @@ export const SignedIn = createBottomTabNavigator(
   {
     order: ["Home", "Explore", "Add", "Chats", "Profile"],
     animationEnabled: true,
-    initialRouteName: "Chats",
+    initialRouteName: "Home",
     navigationOptions: {
       tabBarVisible: true,
     },

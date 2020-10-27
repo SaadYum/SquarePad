@@ -10,7 +10,7 @@ import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
 import * as firebase from "firebase";
 
-import {connect} from 'react-redux';
+import { connect } from "react-redux";
 
 import { Button, Block, Text, theme, Icon, Input } from "galio-framework";
 
@@ -26,26 +26,30 @@ import {
   TouchableHighlight,
 } from "react-native-gesture-handler";
 import { ListItem } from "react-native-elements";
-import { fetchChats, testAction } from "../src/actions/chatActions";
-
-
+import {
+  fetchChats,
+  testAction,
+  fetchFollowing,
+} from "../src/actions/chatActions";
 
 // FOR REDUX
-const mapStateToProps = (state) =>{
-// console.log("YESS", state)
-  return{
-    chats: state.chatReducer.chats
-  }
-}
+const mapStateToProps = (state) => {
+  // console.log("YESS", state)
+  return {
+    chats: state.chatReducer.chats,
+    users: state.chatReducer.users,
+    followedUsers: state.chatReducer.followedUsers,
+    followers: state.chatReducer.followers,
+  };
+};
 
-const mapDispatchToProps = (dispatch) =>{
-  return{
-    addChat: (data)=> dispatch(testAction(data)),
-    fetchChats: ()=> dispatch(fetchChats())
-  }
-}
-
-
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addChat: (data) => dispatch(testAction(data)),
+    fetchChats: () => dispatch(fetchChats()),
+    fetchFollowing: () => dispatch(fetchFollowing()),
+  };
+};
 
 class MyChats extends Component {
   userId = firebase.auth().currentUser.uid;
@@ -69,7 +73,6 @@ class MyChats extends Component {
     searchResults: [],
     foundUser: "",
     found: false,
-    
   };
 
   // Get all the users the current user is following
@@ -90,26 +93,25 @@ class MyChats extends Component {
     let followedUsers = this.state.followedUsers;
     let users = [];
     followedUsers.forEach(async (userId) => {
-         this.firestoreUserRef
-          .doc(userId)
-          .get()
-          .then((doc) => {
-            let name = doc.data().username;
+      this.firestoreUserRef
+        .doc(userId)
+        .get()
+        .then((doc) => {
+          let name = doc.data().username;
 
-            let avatar = doc.data().profilePic;
-            let push_token = doc.data().push_token;
+          let avatar = doc.data().profilePic;
+          let push_token = doc.data().push_token;
 
-            let userObj = {
-              username: name,
-              userId: userId,
-              avatar: avatar,
-              push_token: typeof push_token !== "undefined" ? push_token : "",
-            };
-            users.push(userObj);
-          });
-      });
-      this.setState({ users: users });
-    
+          let userObj = {
+            username: name,
+            userId: userId,
+            avatar: avatar,
+            push_token: typeof push_token !== "undefined" ? push_token : "",
+          };
+          users.push(userObj);
+        });
+    });
+    this.setState({ users: users });
   };
 
   textInput = (word) => {
@@ -167,7 +169,7 @@ class MyChats extends Component {
             this.setState(
               {
                 foundUsers: users,
-              },
+              }
               // console.log(this.state.foundUsers)
             );
           });
@@ -243,47 +245,53 @@ class MyChats extends Component {
         }}
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Button onPress={()=>{this.props.addChat("Added1")}}>Add</Button>
-          {this.props.chats &&
-            this.props.chats.map((u, i) => {
+          {/* <Button
+            onPress={() => {
+              this.props.addChat("Added1");
+            }}
+          >
+            Add
+          </Button> */}
+          {this.props.followedUsers &&
+            this.props.followedUsers.map((u, i) => {
               return (
-                <Block>
-                  <Text>{u.data}</Text>
-                </Block>
-                // <TouchableOpacity
-                //   onPress={() => {
-                //     this.props.navigation.navigate("Chat", {
-                //       userId: u.userId,
-                //     });
-                //   }}
-                //   key={i}
-                // >
-                //   <Block left row>
-                //     <ListItem
-                //       containerStyle={{
-                //         width: width * 0.77,
-                //         backgroundColor: "#f7f7f7",
-                //         borderRadius: 10,
-                //       }}
-                //       title={u.username}
-                //       subtitle={"Tap to chat"}
-                //       subtitleStyle={{ color: "grey" }}
-                //       leftAvatar={{ source: { uri: u.avatar } }}
-                //       titleStyle={{ fontSize: 20 }}
-                //     />
+                // <Block>
+                //   <Text>{u.data}</Text>
+                // </Block>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.props.navigation.navigate("Chat", {
+                      userId: u.userId,
+                    });
+                  }}
+                  key={i}
+                >
+                  <Block left row>
+                    <ListItem
+                      containerStyle={{
+                        width: width * 0.77,
+                        backgroundColor: "#f7f7f7",
+                        borderRadius: 10,
+                      }}
+                      title={u.username}
+                      subtitle={"Tap to chat"}
+                      subtitleStyle={{ color: "grey" }}
+                      leftAvatar={{ source: { uri: u.avatar } }}
+                      titleStyle={{ fontSize: 20 }}
+                    />
 
-                //     <Icon
-                //       name="message1"
-                //       family="AntDesign"
-                //       color="grey"
-                //       size={30}
-                //       style={{
-                //         marginTop: 20,
-                //         marginRight: 20,
-                //       }}
-                //     />
-                //   </Block>
-                // </TouchableOpacity>
+                    <Icon
+                      name="message1"
+                      family="AntDesign"
+                      color="grey"
+                      size={30}
+                      style={{
+                        marginTop: 20,
+                        marginRight: 20,
+                      }}
+                    />
+                  </Block>
+                </TouchableOpacity>
               );
             })}
         </ScrollView>
@@ -292,13 +300,15 @@ class MyChats extends Component {
   };
 
   UNSAFE_componentWillMount = () => {
-    this.getFollowedUsers();
+    // this.getFollowedUsers();
     // console.log("REDUCERSSSSSSSSS: ", this.props.chats)
-    this.props.fetchChats();
+    // this.props.fetchChats();
+    // console.log("GOT EM", this.props.users);
   };
 
   componentDidMount = () => {
-    console.log("REDUCERSSSSSSSSS: ", this.props.chats)
+    console.log("GOT EM", this.props.users);
+    console.log("REDUCERSSSSSSSSS: ", this.props.chats);
   };
 
   render() {
@@ -345,7 +355,7 @@ class MyChats extends Component {
     );
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps) (MyChats);
+export default connect(mapStateToProps, mapDispatchToProps)(MyChats);
 
 const styles = StyleSheet.create({
   container: {
@@ -375,4 +385,3 @@ const styles = StyleSheet.create({
     borderColor: "#ebebeb",
   },
 });
-

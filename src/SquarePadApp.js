@@ -20,11 +20,26 @@ import { enableScreens, useScreens } from "react-native-screens";
 import { AnimatedRegion } from "react-native-maps";
 import { firestore } from "firebase";
 import Constants from "expo-constants";
+import { connect } from "react-redux";
+import {
+  fetchChats,
+  testAction,
+  fetchFollowing,
+  fetchFollowers,
+} from "../src/actions/chatActions";
+
 enableScreens();
 
 console.disableYellowBox = true;
 console.ignoredYellowBox = ["Setting a timer"];
-
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addChat: (data) => dispatch(testAction(data)),
+    fetchChats: () => dispatch(fetchChats()),
+    fetchFollowing: () => dispatch(fetchFollowing()),
+    fetchFollowers: () => dispatch(fetchFollowers()),
+  };
+};
 // cache app images
 const assetImages = [
   Images.Onboarding,
@@ -49,7 +64,7 @@ function cacheImages(images) {
   });
 }
 
-export default class SquarePadApp extends React.Component {
+class SquarePadApp extends React.Component {
   state = {
     isLoadingComplete: false,
     signedIn: false,
@@ -178,6 +193,8 @@ export default class SquarePadApp extends React.Component {
           // this.getLocationAsync();
           // console.log("MY user", this.state.userId);
           this.setState({ signedIn: true });
+          this.props.fetchFollowing();
+          this.props.fetchFollowers();
           // firebase
           //   .firestore()
           //   .collection("users")
@@ -208,8 +225,6 @@ export default class SquarePadApp extends React.Component {
       //   this.setState({signedIn: false})
       // }
       // this.sendPushNotification();
-
-
 
       // this.registerForPushNotificationsAsync();
     } catch (error) {
@@ -346,3 +361,5 @@ export default class SquarePadApp extends React.Component {
     this.setState({ isLoadingComplete: true });
   };
 }
+
+export default connect(null, mapDispatchToProps)(SquarePadApp);

@@ -1,2 +1,4 @@
 export const TEST_ACTION = "TEST_ACTION";
 export const FETCH_CHATS = "FETCH_CHATS";
+export const FETCH_FOLLOWING = "FETCH_FOLLOWING";
+export const FETCH_FOLLOWERS = "FETCH_FOLLOWERS";

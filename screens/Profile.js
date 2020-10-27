@@ -23,11 +23,22 @@ import Constants from "expo-constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { logOut } from "../services/auth.service";
 // import { getPosts } from "../constants/Images";
+import { connect } from "react-redux";
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 2;
 // const userID = firebase.auth().currentUser.uid;
+
+const mapStateToProps = (state) => {
+  // console.log("YESS", state)
+  return {
+    chats: state.chatReducer.chats,
+    users: state.chatReducer.users,
+    followedUsers: state.chatReducer.followedUsers,
+    followers: state.chatReducer.followers,
+  };
+};
 
 class Profile extends React.Component {
   user = firebase.auth().currentUser;
@@ -156,23 +167,30 @@ class Profile extends React.Component {
         .then(async () => {
           // 2. State Removal
 
-            firebase.firestore().collection("users").doc(this.user.uid)
-            .set({
-              profilePic: Images.ProfilePicture
-            },{merge: true}).then(async()=>{
-
-              
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(this.user.uid)
+            .set(
+              {
+                profilePic: Images.ProfilePicture,
+              },
+              { merge: true }
+            )
+            .then(async () => {
               this.setState({ profilePic: Images.ProfilePicture });
-              
+
               // 3. Local Storage Removal
-              await AsyncStorage.removeItem("userProflePic(" + this.user.uid + ")")
-              .then(() => {
-                alert("Your Profile Photo has been removed!");
-              })
-              .catch((error) => {
-                alert(error);
-              })
-            })
+              await AsyncStorage.removeItem(
+                "userProflePic(" + this.user.uid + ")"
+              )
+                .then(() => {
+                  alert("Your Profile Photo has been removed!");
+                })
+                .catch((error) => {
+                  alert(error);
+                });
+            });
         })
         .catch((error) => {
           alert(error);
@@ -441,35 +459,39 @@ class Profile extends React.Component {
           </Block>
           <Block style={styles.info}>
             <Block row space="between">
-              
-              <TouchableOpacity onPress={()=>{this.props.navigation.navigate("MyFollowers")}}>
-
-              <Block middle>
-              
-                <Text
-                  bold
-                  size={12}
-                  color="#525F7F"
-                  style={{ marginBottom: 4 }}
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate("MyFollowers");
+                }}
+              >
+                <Block middle>
+                  <Text
+                    bold
+                    size={12}
+                    color="#525F7F"
+                    style={{ marginBottom: 4 }}
                   >
-                  {this.state.followedByUsers}
-                </Text>
-                <Text size={12}>Followers</Text>
-              </Block>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={()=>{this.props.navigation.navigate("MyFollowing")}}>
-
-              <Block middle>
-                <Text
-                  bold
-                  color="#525F7F"
-                  size={12}
-                  style={{ marginBottom: 4 }}
-                >
-                  {this.state.followedUsers}
-                </Text>
-                <Text size={12}>Following</Text>
-              </Block>
+                    {this.props.followers.length}
+                  </Text>
+                  <Text size={12}>Followers</Text>
+                </Block>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.navigate("MyFollowing");
+                }}
+              >
+                <Block middle>
+                  <Text
+                    bold
+                    color="#525F7F"
+                    size={12}
+                    style={{ marginBottom: 4 }}
+                  >
+                    {this.props.followedUsers.length}
+                  </Text>
+                  <Text size={12}>Following</Text>
+                </Block>
               </TouchableOpacity>
               <Block middle>
                 <Text
@@ -599,4 +621,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default connect(mapStateToProps, null)(Profile);
