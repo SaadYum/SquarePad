@@ -6,9 +6,10 @@ import {
   Image,
   Alert,
   Dimensions,
+  View,
 } from "react-native";
 import PropTypes from "prop-types";
-import { Button, Block, Text } from "galio-framework";
+import { Button, Block, Text, Icon } from "galio-framework";
 import * as firebase from "firebase";
 
 import argonTheme from "../constants/Theme";
@@ -17,9 +18,14 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { GiftedChat, Bubble, Actions } from "react-native-gifted-chat";
 import { CreateUser } from "../services/auth.service";
 import CustomActions from "./CustomActions";
+import { Video } from "expo-av";
+import VideoPlayer from 'expo-video-player'
+
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
+
+
 
 class Chat extends React.Component {
   currentUserId = firebase.auth().currentUser.uid;
@@ -39,6 +45,7 @@ class Chat extends React.Component {
       secondUser: {},
       groupChatId: this.currentUserId + "-" + this.secondUserId,
       firestoreMessagesRef: "",
+      playVideo: false
     };
     this.onSend = this.onSend.bind(this);
   }
@@ -158,6 +165,8 @@ class Chat extends React.Component {
             _id: change.doc.id,
             createdAt: new Date(parseInt(docData.timestamp)).toString(),
             text: docData.content,
+            content: docData.content,
+            type: docData.type,
             user: {
               _id: docData.idFrom,
             },
@@ -198,11 +207,11 @@ class Chat extends React.Component {
       this.firestoreMessagesRef
         .doc(timestamp)
         .set({
-          // content: message.text,
+          content: message.image,
           idFrom: this.currentUserId,
           idTo: this.secondUserId,
           timestamp: timestamp,
-          image: message.image,
+          // image: message.image,
           type: 1,
         })
         .then(() => {
@@ -240,36 +249,110 @@ class Chat extends React.Component {
     let avatar = secondUser.avatar;
 
     if (message.user._id != this.currentUserId) {
-      this.setState((previousState) => {
-        return {
+
+      if(message.type == 0){
+
+        this.setState((previousState) => {
+          return {
           messages: GiftedChat.append(previousState.messages, {
             _id: message._id,
-            text: message.text,
+            text: message.content,
             createdAt: message.createdAt,
             user: {
               _id: id,
               name: name,
               avatar: avatar,
             },
-            image: message.image,
+            // image: message.image,
           }),
         };
       });
+    }else if(message.type==1){
+          this.setState((previousState) => {
+            return {
+            messages: GiftedChat.append(previousState.messages, {
+              _id: message._id,
+              // text: message.text,
+              createdAt: message.createdAt,
+              user: {
+                _id: id,
+                name: name,
+                avatar: avatar,
+              },
+              image: message.content,
+            }),
+          };
+        });
+        
+      }else{
+          this.setState((previousState) => {
+            return {
+            messages: GiftedChat.append(previousState.messages, {
+              _id: message._id,
+              // text: message.text,
+              createdAt: message.createdAt,
+              user: {
+                _id: id,
+                name: name,
+                avatar: avatar,
+              },
+              video: message.content,
+            }),
+          };
+        });
+
+    }
     } else {
-      this.setState((previousState) => {
-        return {
-          messages: GiftedChat.append(previousState.messages, {
-            _id: message._id,
-            text: message.text,
+      if(message.type == 0){
+
+        this.setState((previousState) => {
+          return {
+            messages: GiftedChat.append(previousState.messages, {
+              _id: message._id,
+              text: message.content,
             createdAt: message.createdAt,
             user: {
               _id: this.currentUserId,
             },
-
-            image: message.image,
+            
+            // image: message.image,
           }),
         };
       });
+    }else if(message.type ==1){
+          this.setState((previousState) => {
+            return {
+              messages: GiftedChat.append(previousState.messages, {
+                _id: message._id,
+                // text: message.text,
+              createdAt: message.createdAt,
+              user: {
+                _id: this.currentUserId,
+              },
+              
+              image: message.content,
+            }),
+          };
+        });
+  
+      }else{
+            this.setState((previousState) => {
+              return {
+                messages: GiftedChat.append(previousState.messages, {
+                  _id: message._id,
+                  // text: message.text,
+                createdAt: message.createdAt,
+                user: {
+                  _id: this.currentUserId,
+                },
+                
+                video: message.content,
+              }),
+            };
+          });
+    
+
+    }
     }
   };
   renderCustomActions(props) {
@@ -293,6 +376,58 @@ class Chat extends React.Component {
     // return <Actions {...props} options={options} />;
   }
 
+
+  toggleVideoPlay = ()=>{
+    this.setState({playVideo : !this.state.playVideo});
+  }
+  
+    renderMessageVideo = (message) => {
+     const { currentMessage } = message;
+     return (
+      //  <View style={{ padding: 20 }}>
+      //     <Video
+      //      resizeMode="contain"
+      //      useNativeControls
+      //      shouldPlay={false}
+      //      source={{ uri: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" }}
+      //     //  style={styles.video}
+      //    />
+      //  </View>
+      <View>
+{/* 
+     <Video
+  source={{ uri: currentMessage.video }}
+  rate={1.0}
+  volume={1.0}
+  isMuted={false}
+  resizeMode="stretch"
+  shouldPlay={true}
+  isLooping
+  style={{ width: 300, height: 150, marginTop:15, borderRadius: 10 }}
+/>
+          <View style={styles.controlBar}>
+<TouchableOpacity onPress={this.toggleVideoPlay}>
+  <Icon
+            size={20}
+            color={"white"}
+            name="play"
+            family="antdesign"
+          />
+</TouchableOpacity>
+  </View> */}
+  <VideoPlayer
+  videoProps={{
+    shouldPlay: true,
+    resizeMode: Video.RESIZE_MODE_CONTAIN,
+    source: {
+      uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    },
+  }}
+  inFullscreen={true}
+/>
+  </View>
+      );
+   };
   render() {
     return (
       <Block style={{ paddingBottom: 10 }} flex>
@@ -302,6 +437,7 @@ class Chat extends React.Component {
           onSend={this.onSend}
           uploadMediaMessage={this.uploadMediaMessage}
           renderActions={this.renderCustomActions}
+          renderMessageVideo={this.renderMessageVideo}
           user={{
             _id: this.currentUserId,
           }}
@@ -346,6 +482,17 @@ const styles = StyleSheet.create({
   },
   cardUsername: {
     paddingTop: 4,
+  },
+  controlBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 45,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   cardUser: {
     fontFamily: "Arial",
