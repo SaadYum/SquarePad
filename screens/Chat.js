@@ -19,7 +19,7 @@ import { GiftedChat, Bubble, Actions } from "react-native-gifted-chat";
 import { CreateUser } from "../services/auth.service";
 import CustomActions from "./CustomActions";
 import { Video } from "expo-av";
-// import VideoPlayer from "expo-video-player";
+import VideoPlayer from "expo-video-player";
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
@@ -383,7 +383,7 @@ class Chat extends React.Component {
       //    />
       //  </View>
       <View>
-        <Video
+        {/* <Video
           source={{ uri: currentMessage.video }}
           rate={1.0}
           volume={1.0}
@@ -393,22 +393,24 @@ class Chat extends React.Component {
           // isLooping
           useNativeControls
           style={{ width: 300, height: 150, marginTop: 15, borderRadius: 10 }}
-        />
+        /> */}
         {/* <View style={styles.controlBar}>
           <TouchableOpacity onPress={this.toggleVideoPlay}>
             <Icon size={20} color={"white"} name="play" family="antdesign" />
           </TouchableOpacity>
         </View> */}
-        {/* <VideoPlayer
-  videoProps={{
-    shouldPlay: true,
-    resizeMode: Video.RESIZE_MODE_CONTAIN,
-    source: {
-      uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    },
-  }}
-  inFullscreen={true}
-/> */}
+        <VideoPlayer
+          width={300}
+          height={150}
+          videoProps={{
+            shouldPlay: false,
+            resizeMode: Video.RESIZE_MODE_COVER,
+            source: {
+              uri: currentMessage.video,
+            },
+          }}
+          // inFullscreen={true}
+        />
       </View>
     );
   };
