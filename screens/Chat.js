@@ -19,13 +19,10 @@ import { GiftedChat, Bubble, Actions } from "react-native-gifted-chat";
 import { CreateUser } from "../services/auth.service";
 import CustomActions from "./CustomActions";
 import { Video } from "expo-av";
-import VideoPlayer from 'expo-video-player'
-
+// import VideoPlayer from "expo-video-player";
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
-
-
 
 class Chat extends React.Component {
   currentUserId = firebase.auth().currentUser.uid;
@@ -45,7 +42,7 @@ class Chat extends React.Component {
       secondUser: {},
       groupChatId: this.currentUserId + "-" + this.secondUserId,
       firestoreMessagesRef: "",
-      playVideo: false
+      playVideo: false,
     };
     this.onSend = this.onSend.bind(this);
   }
@@ -249,27 +246,25 @@ class Chat extends React.Component {
     let avatar = secondUser.avatar;
 
     if (message.user._id != this.currentUserId) {
-
-      if(message.type == 0){
-
+      if (message.type == 0) {
         this.setState((previousState) => {
           return {
-          messages: GiftedChat.append(previousState.messages, {
-            _id: message._id,
-            text: message.content,
-            createdAt: message.createdAt,
-            user: {
-              _id: id,
-              name: name,
-              avatar: avatar,
-            },
-            // image: message.image,
-          }),
-        };
-      });
-    }else if(message.type==1){
-          this.setState((previousState) => {
-            return {
+            messages: GiftedChat.append(previousState.messages, {
+              _id: message._id,
+              text: message.content,
+              createdAt: message.createdAt,
+              user: {
+                _id: id,
+                name: name,
+                avatar: avatar,
+              },
+              // image: message.image,
+            }),
+          };
+        });
+      } else if (message.type == 1) {
+        this.setState((previousState) => {
+          return {
             messages: GiftedChat.append(previousState.messages, {
               _id: message._id,
               // text: message.text,
@@ -283,10 +278,9 @@ class Chat extends React.Component {
             }),
           };
         });
-        
-      }else{
-          this.setState((previousState) => {
-            return {
+      } else {
+        this.setState((previousState) => {
+          return {
             messages: GiftedChat.append(previousState.messages, {
               _id: message._id,
               // text: message.text,
@@ -300,59 +294,54 @@ class Chat extends React.Component {
             }),
           };
         });
-
-    }
+      }
     } else {
-      if(message.type == 0){
-
+      if (message.type == 0) {
         this.setState((previousState) => {
           return {
             messages: GiftedChat.append(previousState.messages, {
               _id: message._id,
               text: message.content,
-            createdAt: message.createdAt,
-            user: {
-              _id: this.currentUserId,
-            },
-            
-            // image: message.image,
-          }),
-        };
-      });
-    }else if(message.type ==1){
-          this.setState((previousState) => {
-            return {
-              messages: GiftedChat.append(previousState.messages, {
-                _id: message._id,
-                // text: message.text,
               createdAt: message.createdAt,
               user: {
                 _id: this.currentUserId,
               },
-              
+
+              // image: message.image,
+            }),
+          };
+        });
+      } else if (message.type == 1) {
+        this.setState((previousState) => {
+          return {
+            messages: GiftedChat.append(previousState.messages, {
+              _id: message._id,
+              // text: message.text,
+              createdAt: message.createdAt,
+              user: {
+                _id: this.currentUserId,
+              },
+
               image: message.content,
             }),
           };
         });
-  
-      }else{
-            this.setState((previousState) => {
-              return {
-                messages: GiftedChat.append(previousState.messages, {
-                  _id: message._id,
-                  // text: message.text,
-                createdAt: message.createdAt,
-                user: {
-                  _id: this.currentUserId,
-                },
-                
-                video: message.content,
-              }),
-            };
-          });
-    
+      } else {
+        this.setState((previousState) => {
+          return {
+            messages: GiftedChat.append(previousState.messages, {
+              _id: message._id,
+              // text: message.text,
+              createdAt: message.createdAt,
+              user: {
+                _id: this.currentUserId,
+              },
 
-    }
+              video: message.content,
+            }),
+          };
+        });
+      }
     }
   };
   renderCustomActions(props) {
@@ -376,14 +365,14 @@ class Chat extends React.Component {
     // return <Actions {...props} options={options} />;
   }
 
+  toggleVideoPlay = () => {
+    this.setState({ playVideo: !this.state.playVideo });
+  };
 
-  toggleVideoPlay = ()=>{
-    this.setState({playVideo : !this.state.playVideo});
-  }
-  
-    renderMessageVideo = (message) => {
-     const { currentMessage } = message;
-     return (
+  renderMessageVideo = (message) => {
+    const { currentMessage } = message;
+    let shouldPlay = false;
+    return (
       //  <View style={{ padding: 20 }}>
       //     <Video
       //      resizeMode="contain"
@@ -394,28 +383,23 @@ class Chat extends React.Component {
       //    />
       //  </View>
       <View>
-{/* 
-     <Video
-  source={{ uri: currentMessage.video }}
-  rate={1.0}
-  volume={1.0}
-  isMuted={false}
-  resizeMode="stretch"
-  shouldPlay={true}
-  isLooping
-  style={{ width: 300, height: 150, marginTop:15, borderRadius: 10 }}
-/>
-          <View style={styles.controlBar}>
-<TouchableOpacity onPress={this.toggleVideoPlay}>
-  <Icon
-            size={20}
-            color={"white"}
-            name="play"
-            family="antdesign"
-          />
-</TouchableOpacity>
-  </View> */}
-  <VideoPlayer
+        <Video
+          source={{ uri: currentMessage.video }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={true}
+          resizeMode="cover"
+          shouldPlay
+          // isLooping
+          useNativeControls
+          style={{ width: 300, height: 150, marginTop: 15, borderRadius: 10 }}
+        />
+        {/* <View style={styles.controlBar}>
+          <TouchableOpacity onPress={this.toggleVideoPlay}>
+            <Icon size={20} color={"white"} name="play" family="antdesign" />
+          </TouchableOpacity>
+        </View> */}
+        {/* <VideoPlayer
   videoProps={{
     shouldPlay: true,
     resizeMode: Video.RESIZE_MODE_CONTAIN,
@@ -424,10 +408,10 @@ class Chat extends React.Component {
     },
   }}
   inFullscreen={true}
-/>
-  </View>
-      );
-   };
+/> */}
+      </View>
+    );
+  };
   render() {
     return (
       <Block style={{ paddingBottom: 10 }} flex>
@@ -484,14 +468,14 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   controlBar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: 45,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   cardUser: {
