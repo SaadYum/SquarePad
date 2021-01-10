@@ -160,11 +160,11 @@ class Header extends React.Component {
             navigation={navigation}
             isWhite={white}
           />,
-          // <ChatButton
-          //   key="chat-home"
-          //   navigation={navigation}
-          //   isWhite={white}
-          // />,
+          <ChatButton
+            key="chat-home"
+            navigation={navigation}
+            isWhite={white}
+          />,
         ];
       case "Deals":
         return [

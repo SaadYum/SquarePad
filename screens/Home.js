@@ -325,17 +325,21 @@ class Home extends React.Component {
                 lastDocArr.push(userObj);
               }
               snapshot.forEach((doc) => {
+                let data = doc.data();
                 let article = {
                   username: this.state.userData.username,
                   userId: user,
                   title: "post",
                   avatar: this.state.avatar,
-                  image: doc.data().image,
+                  image: data.image,
                   cta: "cta",
-                  caption: doc.data().caption,
-                  location: doc.data().location.locationName,
-                  postId: doc.data().postId,
-                  timeStamp: doc.data().time,
+
+                  video: data.type == "video" ? data.video : "",
+                  type: data.type,
+                  caption: data.caption,
+                  location: data.location.locationName,
+                  postId: data.postId,
+                  timeStamp: data.time,
                   horizontal: true,
                 };
                 allPosts.push(article);

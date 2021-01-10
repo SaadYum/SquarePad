@@ -539,6 +539,8 @@ class Profile extends React.Component {
                         image: post.image,
                         cta: "View article",
                         caption: post.caption,
+                        video: post.type == "video" ? post.video : "",
+                        type: post.type,
                         location: post.location.locationName,
                         postId: post.postId,
                         userId: post.userId,

@@ -181,9 +181,6 @@ class Notifications extends React.Component {
       notifications: [],
       refreshing: false,
     };
-
-    this.joinPlan = this.joinPlan.bind(this);
-    this.rejectPlan = this.rejectPlan.bind(this);
   }
   firestoreNotificationRef = firebase
     .firestore()
@@ -198,114 +195,6 @@ class Notifications extends React.Component {
     return (
       <Image source={{ uri: this.state.profilePic }} style={styles.avatar} />
     );
-  };
-
-  joinPlan = (notification) => {
-    let members = [];
-    let currentMember;
-    let wholePlan;
-    firebase
-      .firestore()
-      .collection("plans")
-      .doc(notification.creatorId)
-      .collection("userPlans")
-      .doc(notification.planId)
-      .get()
-      .then((doc) => {
-        members = doc.data().members;
-        wholePlan = doc.data();
-        currentMember = members.find(
-          (member) => member.userId == this.user.uid
-        ); // current member that we'll update
-        currentMember.planRequest = true; //change we made
-        members = members.filter((member) => member.userId != this.user.uid); // members without current
-        members.push(currentMember);
-      })
-      .then(() => {
-        firebase
-          .firestore()
-          .collection("plans")
-          .doc(notification.creatorId)
-          .collection("userPlans")
-          .doc(notification.planId)
-          .set(
-            {
-              members: members,
-            },
-            { merge: true }
-          )
-          .then(() => {
-            firebase
-              .firestore()
-              .collection("plans")
-              .doc(this.user.uid)
-              .collection("invitedPlans")
-              .doc(notification.planId)
-              .set({
-                creatorId: wholePlan.creatorId,
-                planId: notification.planId,
-                // creatorId: wholePlan.creatorId,
-                // creatorName: wholePlan.creatorName,
-                // members: members, // our new variable
-                // todos: wholePlan.todos,
-                // spots: wholePlan.spots,
-                // destination: wholePlan.destination,
-                // destination_id: wholePlan.destination_id,
-                // location: wholePlan.location,
-                // startDate: wholePlan.startDate,
-                // endDate: wholePlan.endDate,
-                // dateCreated: wholePlan.dateCreated,
-                // photos: wholePlan.photos,
-                // destinationTypes: wholePlan.destinationTypes,
-                // status: "ongoing",
-              })
-              .catch((err) => alert("Error Adding Plan!"));
-            this.firestoreNotificationRef
-              .doc(notification.id)
-              .delete()
-              .catch((err) => alert(err));
-          });
-      });
-
-    props.navigation.navigate("NotificationPlans");
-  };
-
-  rejectPlan = (notification) => {
-    let members = [];
-    let currentMember;
-    let wholePlan;
-    firebase
-      .firestore()
-      .collection("plans")
-      .doc(notification.creatorId)
-      .collection("userPlans")
-      .doc(notification.planId)
-      .get()
-      .then((doc) => {
-        members = doc.data().members;
-        wholePlan = doc.data();
-        members = members.filter((member) => member.userId != this.user.uid); // members without current
-      })
-      .then(() => {
-        firebase
-          .firestore()
-          .collection("plans")
-          .doc(notification.creatorId)
-          .collection("userPlans")
-          .doc(notification.planId)
-          .set(
-            {
-              members: members,
-            },
-            { merge: true }
-          )
-          .then(() => {
-            this.firestoreNotificationRef
-              .doc(notification.id)
-              .delete()
-              .catch((err) => alert(err));
-          });
-      });
   };
 
   getNotifications = () => {
@@ -352,7 +241,7 @@ class Notifications extends React.Component {
             style={{
               backgroundColor: "#ebebeb",
               borderRadius: 20,
-              // width: width * 0.7,
+              width: width * 0.9,
               padding: 10,
             }}
           >

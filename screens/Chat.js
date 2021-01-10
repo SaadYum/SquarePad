@@ -383,23 +383,35 @@ class Chat extends React.Component {
       //    />
       //  </View>
       <View>
-        {/* <Video
-          source={{ uri: currentMessage.video }}
-          rate={1.0}
-          volume={1.0}
-          isMuted={true}
-          resizeMode="cover"
-          shouldPlay
-          // isLooping
-          useNativeControls
-          style={{ width: 300, height: 150, marginTop: 15, borderRadius: 10 }}
-        /> */}
-        {/* <View style={styles.controlBar}>
-          <TouchableOpacity onPress={this.toggleVideoPlay}>
-            <Icon size={20} color={"white"} name="play" family="antdesign" />
+        {/* {this.state.playVideo ? (
+          <Video
+          
+            source={{ uri: currentMessage.video,  }, presentf}
+            rate={1.0}
+            volume={1.0}
+            isMuted={true}
+            resizeMode="cover"
+            shouldPlay
+            // isLooping
+            useNativeControls
+            style={{ width: 300, height: 150, marginTop: 15, borderRadius: 10 }}
+          />
+        ) : (
+          <View />
+        )} */}
+        <View style={styles.controlBar}>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate("ChatVideo", {
+                video: currentMessage.video,
+              });
+            }}
+          >
+            <Icon size={20} color={"black"} name="play" family="antdesign" />
           </TouchableOpacity>
-        </View> */}
-        <VideoPlayer
+        </View>
+
+        {/* <VideoPlayer
           width={300}
           height={150}
           videoProps={{
@@ -410,7 +422,7 @@ class Chat extends React.Component {
             },
           }}
           // inFullscreen={true}
-        />
+        /> */}
       </View>
     );
   };
@@ -470,15 +482,16 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   controlBar: {
-    position: "absolute",
+    position: "relative",
+
     bottom: 0,
     left: 0,
     right: 0,
-    height: 45,
+    height: 50,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "transparent",
   },
   cardUser: {
     fontFamily: "Arial",

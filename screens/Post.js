@@ -22,6 +22,8 @@ class Post extends React.Component {
       title: navigation.getParam("title"),
       avatar: navigation.getParam("avatar"),
       image: navigation.getParam("image"),
+      video: navigation.getParam("video"),
+      type: navigation.getParam("type"),
       cta: navigation.getParam("cta"),
       caption: navigation.getParam("caption"),
       location: navigation.getParam("location"),

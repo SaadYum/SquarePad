@@ -18,6 +18,7 @@ import * as firebase from "firebase";
 import { argonTheme, Images } from "../constants";
 import { FlatList } from "react-native-gesture-handler";
 import CommentItem from "./CommentItem";
+import { Video } from "expo-av";
 var width = Dimensions.get("window").width;
 var height = Dimensions.get("window").height;
 
@@ -566,7 +567,28 @@ class Card extends React.Component {
           <TouchableWithoutFeedback onPress={this.handleDoubleTap}>
             {/* <Block flex style={imgContainer}> */}
             <Block flex center>
-              <Image source={{ uri: item.image }} style={imageStyles} />
+              {item.type != "video" ? (
+                <Image source={{ uri: item.image }} style={imageStyles} />
+              ) : (
+                <Video
+                  source={{
+                    uri: item.Video,
+                    // "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+                  }}
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={false}
+                  resizeMode="cover"
+                  shouldPlay
+                  // isLooping
+                  // useNativeControls
+                  style={{
+                    width: width * 0.8,
+                    height: width * 0.5,
+                    borderRadius: 15,
+                  }}
+                />
+              )}
             </Block>
           </TouchableWithoutFeedback>
           <Block style={{ flex: 1, paddingTop: 12 }}>

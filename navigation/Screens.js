@@ -56,6 +56,7 @@ import Notifications from "../screens/Notifications";
 import PlanChat from "../screens/PlanChat";
 import MyChats from "../screens/MyChats";
 import Chat from "../screens/Chat";
+import ChatVideo from "../screens/ChatVideo";
 import Groups from "../screens/Groups";
 import AddGroup from "../screens/AddGroup";
 import Group from "../screens/Group";
@@ -194,6 +195,12 @@ const ChatStack = createStackNavigator(
       screen: Chat,
       navigationOptions: ({ navigation }) => ({
         header: <Header back title="Chat" navigation={navigation} />,
+      }),
+    },
+    ChatVideo: {
+      screen: ChatVideo,
+      navigationOptions: ({ navigation }) => ({
+        header: <Header back title="" navigation={navigation} />,
       }),
     },
   },
@@ -634,6 +641,37 @@ const GroupStack = createStackNavigator(
   }
 );
 
+const NotificationsStack = createStackNavigator(
+  {
+    Notifications: {
+      screen: Notifications,
+      navigationOptions: ({ navigation }) => ({
+        header: <Header title="Notifications" navigation={navigation} />,
+      }),
+    },
+    NotificationPost: {
+      screen: Post,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            title="Post"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
+        ),
+        headerTransparent: false,
+      }),
+    },
+  },
+  {
+    cardStyle: {
+      backgroundColor: "#FFFFFF",
+    },
+    transitionConfig,
+  }
+);
+
 const HomeStack = createStackNavigator(
   {
     Home: {
@@ -654,27 +692,27 @@ const HomeStack = createStackNavigator(
         header: <Header back title="Chat" navigation={navigation} />,
       }),
     },
-    Notifications: {
-      screen: Notifications,
-      navigationOptions: ({ navigation }) => ({
-        header: <Header back title="Notifications" navigation={navigation} />,
-      }),
-    },
-    NotificationPost: {
-      screen: Post,
-      navigationOptions: ({ navigation }) => ({
-        header: (
-          <Header
-            title="Post"
-            back
-            iconColor={"#FFF"}
-            navigation={navigation}
-          />
-        ),
-        headerTransparent: false,
-      }),
-    },
-    // NotificationPlans: {
+    // Notifications: {
+    //   screen: Notifications,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: <Header back title="Notifications" navigation={navigation} />,
+    //   }),
+    // },
+    // NotificationPost: {
+    //   screen: Post,
+    //   navigationOptions: ({ navigation }) => ({
+    //     header: (
+    //       <Header
+    //         title="Post"
+    //         back
+    //         iconColor={"#FFF"}
+    //         navigation={navigation}
+    //       />
+    //     ),
+    //     headerTransparent: false,
+    //   }),
+    // },
+    // // NotificationPlans: {
     //   screen: MyPlans,
     //   navigationOptions: ({ navigation }) => ({
     //     header: <Header back title="My Plans" navigation={navigation} />,
@@ -764,7 +802,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="AntDesign" size={20} color={tintColor} name="home" />
+          <Icon family="AntDesign" size={25} color={tintColor} name="home" />
         ),
       },
     },
@@ -775,7 +813,7 @@ export const SignedIn = createBottomTabNavigator(
         tabBarIcon: ({ tintColor }) => (
           <Icon
             family="AntDesign"
-            size={20}
+            size={25}
             color={tintColor}
             name="message1"
           />
@@ -787,7 +825,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="Feather" size={20} color={tintColor} name="map" />
+          <Icon family="Feather" size={25} color={tintColor} name="map" />
         ),
       },
     },
@@ -796,7 +834,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Home',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="Feather" size={20} color={tintColor} name="map" />
+          <Icon family="Feather" size={25} color={tintColor} name="map" />
         ),
       },
     },
@@ -805,7 +843,7 @@ export const SignedIn = createBottomTabNavigator(
     //   navigationOptions: {
     //     // tabBarLabel: 'Home',
     //     tabBarIcon: ({ tintColor }) => (
-    //       <Icon family="Feather" size={20} color={tintColor} name="map" />
+    //       <Icon family="Feather" size={25} color={tintColor} name="map" />
     //     ),
     //   },
     // },
@@ -815,7 +853,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Profile',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="AntDesign" size={20} color={tintColor} name="user" />
+          <Icon family="AntDesign" size={25} color={tintColor} name="user" />
         ),
       },
     },
@@ -827,7 +865,7 @@ export const SignedIn = createBottomTabNavigator(
         tabBarIcon: ({ tintColor }) => (
           <Icon
             family="AntDesign"
-            size={20}
+            size={25}
             color={tintColor}
             name="addusergroup"
           />
@@ -840,7 +878,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Update',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="AntDesign" size={20} color={tintColor} name="user" />
+          <Icon family="AntDesign" size={25} color={tintColor} name="user" />
         ),
       },
     },
@@ -849,7 +887,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Add Post',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="AntDesign" size={20} color={tintColor} name="camera" />
+          <Icon family="AntDesign" size={25} color={tintColor} name="camera" />
         ),
       },
     },
@@ -858,7 +896,7 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Add Post',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="AntDesign" size={20} color={tintColor} name="search1" />
+          <Icon family="AntDesign" size={25} color={tintColor} name="search1" />
         ),
       },
     },
@@ -867,7 +905,16 @@ export const SignedIn = createBottomTabNavigator(
       navigationOptions: {
         // tabBarLabel: 'Add Post',
         tabBarIcon: ({ tintColor }) => (
-          <Icon family="Entypo" size={20} color={tintColor} name="users" />
+          <Icon family="Entypo" size={25} color={tintColor} name="users" />
+        ),
+      },
+    },
+    Notifications: {
+      screen: NotificationsStack,
+      navigationOptions: {
+        // tabBarLabel: 'Add Post',
+        tabBarIcon: ({ tintColor }) => (
+          <Icon family="AntDesign" size={25} color={tintColor} name="bells" />
         ),
       },
     },
@@ -883,13 +930,14 @@ export const SignedIn = createBottomTabNavigator(
     // },
   },
   {
-    order: ["Home", "Explore", "Add", "Chats", "Profile"],
+    order: ["Home", "Explore", "Add", "Notifications", "Profile"],
     animationEnabled: true,
     initialRouteName: "Home",
     navigationOptions: {
       tabBarVisible: true,
     },
     tabBarOptions: {
+      showLabel: false,
       activeTintColor: "tomato",
       inactiveTintColor: "gray",
     },
