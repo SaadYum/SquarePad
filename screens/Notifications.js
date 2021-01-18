@@ -29,6 +29,14 @@ import {
   FlatList,
 } from "react-native-gesture-handler";
 import { getPosts } from "../constants/Images";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => {
+  // console.log("YESS", state)
+  return {
+    notifications: state.chatReducer.notifications,
+  };
+};
 
 const { width, height } = Dimensions.get("screen");
 
@@ -117,54 +125,44 @@ const NotificationItem = (props) => {
   return (
     <TouchableOpacity
       style={{
-        marginHorizontal: 10,
+        marginHorizontal: 1,
         marginTop: 5,
         borderRadius: 15,
         backgroundColor: "#f5f5f5",
       }}
       onPress={() => {
-        let type = props.type;
+        let type = props.item.type;
 
         switch (type) {
           case "comment":
-            getPost(item.postId, item.postUserId).then((post) => {
-              props.navigation.navigate("NotificationPost", {
-                username: post.username,
-                title: "",
-                avatar: post.avatar,
-                image: post.image,
-                cta: "View article",
-                caption: post.caption,
-                location: post.location.locationName,
-                postId: post.postId,
-                userId: post.userId,
-              });
-            });
-            break;
-          case "planRequest":
-            onPlanRequest(props);
-            break;
-          case "plan":
-            props.navigation.navigate("NotificationPlans");
-            break;
-          case "groupInvitation":
-            onGroupInvitation(props);
+            alert(type);
+          case "like":
+            alert(type);
+          case "follow":
+            alert(type);
+          case "request":
+            alert(type);
+          case "chat":
+            alert(type);
           default:
             break;
         }
       }}
     >
       <Block>
-        <Block>
+        <Block style={{ flexDirection: "row", width: width * 0.9 }}>
+          <Block style={{ margin: 5 }}>
+            <Image source={{ uri: props.item.avatar }} style={styles.avatar} />
+          </Block>
+
           <Text
-            h5
-            style={{ marginTop: 10, marginHorizontal: 10, marginBottom: 7 }}
+            style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 7 }}
           >
-            {props.title}
+            {props.item.username + " " + props.item.content}
           </Text>
-          <Text style={{ marginBottom: 15, marginHorizontal: 10 }}>
+          {/* <Text style={{ marginBottom: 15, marginHorizontal: 10 }}>
             {props.content}
-          </Text>
+          </Text> */}
         </Block>
       </Block>
     </TouchableOpacity>
@@ -178,10 +176,18 @@ class Notifications extends React.Component {
     super(props);
     //does whatever stuff
     this.state = {
-      notifications: [],
+      notifications: this.props.notifications,
       refreshing: false,
     };
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.notifications != this.props.notifications) {
+      console.log("NEW NOTIFICATIONS");
+      this.setState({ notifications: this.props.notifications });
+    }
+  }
+
   firestoreNotificationRef = firebase
     .firestore()
     .collection("notifications")
@@ -197,39 +203,9 @@ class Notifications extends React.Component {
     );
   };
 
-  getNotifications = () => {
-    let toDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 7 Days back date
-
-    console.log("jsfjkfbjafjasfj");
-    let lastWeekTimeStamp = firebase.firestore.Timestamp.fromDate(toDate);
-    let notifications = [];
-    this.firestoreNotificationRef
-      .where("time", ">=", lastWeekTimeStamp)
-      .get()
-      .then((docs) => {
-        docs.forEach((doc) => {
-          let notificationObj = doc.data();
-          notificationObj.id = doc.id;
-          notifications.push(notificationObj);
-        });
-        this.setState(
-          { notifications: notifications, refreshing: false },
-          () => {
-            notifications = [];
-            console.log("notifications added", notifications);
-          }
-        );
-      });
-  };
-
-  UNSAFE_componentWillMount = () => {
-    this.getNotifications();
-  };
-
   onRefresh = () => {
-    this.setState({ refreshing: true });
-
-    this.getNotifications();
+    // this.setState({ refreshing: true });
+    // this.getNotifications();
   };
 
   render() {
@@ -258,48 +234,7 @@ class Notifications extends React.Component {
               onRefresh={this.onRefresh}
             />
           }
-          renderItem={({ item }) =>
-            item.type == "comment" ? (
-              <NotificationItem
-                navigation={this.props.navigation}
-                item={item}
-                type={item.type}
-                title={item.user}
-                content={item.content}
-                joinPlan={this.joinPlan}
-                rejectPlan={this.rejectPlan}
-              />
-            ) : item.type == "planRequest" ? (
-              <NotificationItem
-                item={item}
-                navigation={this.props.navigation}
-                type={item.type}
-                title={"Plan Request"}
-                content={item.content}
-                joinPlan={this.joinPlan}
-                rejectPlan={this.rejectPlan}
-              />
-            ) : item.type == "plan" ? (
-              <NotificationItem
-                item={item}
-                navigation={this.props.navigation}
-                type={item.type}
-                title={"Recommended Plan"}
-                content={item.content}
-                joinPlan={this.joinPlan}
-                rejectPlan={this.rejectPlan}
-              />
-            ) : (
-              <NotificationItem
-                item={item}
-                navigation={this.props.navigation}
-                type={item.type}
-                title={"Group Invitation"}
-                content={item.content}
-                group={item.group}
-              />
-            )
-          }
+          renderItem={({ item }) => <NotificationItem item={item} />}
           keyExtractor={(item) => item.id}
         />
       </Block>
@@ -395,4 +330,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Notifications;
+export default connect(mapStateToProps, null)(Notifications);

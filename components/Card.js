@@ -86,6 +86,7 @@ class Card extends React.Component {
     ifLiked: false,
     newLikeDocId: "(" + this.user.uid + ")like",
     userId: this.props.item.userId,
+    postId: this.props.item.postId,
     commentsArray: [],
     getComments: false,
     openCommentInput: false,
@@ -100,6 +101,19 @@ class Card extends React.Component {
     .collection("userPosts");
 
   firestoreUsersRef = firebase.firestore().collection("users");
+
+  firestoreLikeNotificationRef = firebase
+    .firestore()
+    .collection("notifications")
+    .doc(this.state.userId)
+    .collection("userNotifications")
+    .doc("(" + this.state.postId + ")like+(" + this.user.uid + ")");
+
+  firestoreNotificationsRef = firebase
+    .firestore()
+    .collection("notifications")
+    .doc(this.state.userId)
+    .collection("userNotifications");
   // firestorePostRef = firebase.firestore().collection("posts");
 
   componentDidMount = () => {
@@ -167,6 +181,9 @@ class Card extends React.Component {
 
   toggleLike = () => {
     const { item } = this.props;
+
+    console.log(this.state.userId);
+
     if (!this.state.ifLiked) {
       this.setState({ ifLiked: true });
       this.firestorePostRef
@@ -175,11 +192,19 @@ class Card extends React.Component {
         .doc(this.state.newLikeDocId)
         .set({
           userId: this.user.uid,
-        })
-        .then(() => {
-          this.state.likes++;
-          this.setState({ ifLiked: true });
-        });
+        }) &&
+        this.firestoreLikeNotificationRef
+          .set({
+            content: "liked your post",
+            source: this.state.postId,
+            time: new Date().getTime(),
+            userId: this.user.uid,
+            type: "like",
+          })
+          .then(() => {
+            this.state.likes++;
+            this.setState({ ifLiked: true });
+          });
     } else {
       this.setState({ ifLiked: false });
 
@@ -187,8 +212,8 @@ class Card extends React.Component {
         .doc(item.postId)
         .collection("likes")
         .doc(this.state.newLikeDocId)
-        .delete()
-        .then(() => {
+        .delete() &&
+        this.firestoreLikeNotificationRef.delete().then(() => {
           this.state.likes--;
           this.setState({ ifLiked: false });
         });
@@ -316,7 +341,7 @@ class Card extends React.Component {
   postComment = () => {
     const { item } = this.props;
     let myComment = this.state.commentInput;
-
+    let dateTimestamp = new Date().getTime();
     if (myComment != "") {
       // firebase.firestore().collection("comments").doc(item.postId).collection("userComments").add({
 
@@ -340,28 +365,38 @@ class Card extends React.Component {
           comment: myComment,
           userId: this.user.uid,
           postUserId: this.state.userId,
-        })
-        .then(async () => {
-          let pushToken = "";
+        }) &&
+        this.firestoreNotificationsRef
+          .doc(randId)
+          .set({
+            content: "commented on your post",
+            source: this.state.postId,
+            time: dateTimestamp,
+            userId: this.user.uid,
+            type: "comment",
+          })
+          .then(async () => {
+            alert("DPE");
+            let pushToken = "";
 
-          await firebase
-            .firestore()
-            .collection("users")
-            .doc(this.state.userId)
-            .get()
-            .then((doc) => {
-              pushToken = doc.data().push_token;
-            });
+            await firebase
+              .firestore()
+              .collection("users")
+              .doc(this.state.userId)
+              .get()
+              .then((doc) => {
+                pushToken = doc.data().push_token;
+              });
 
-          this.sendPushNotification(
-            this.state.currentUsername,
-            "Commented: " + myComment,
-            pushToken
-          );
-          this.setState({ openCommentInput: false, commentInput: "" });
+            this.sendPushNotification(
+              this.state.currentUsername,
+              "Commented: " + myComment,
+              pushToken
+            );
+            this.setState({ openCommentInput: false, commentInput: "" });
 
-          this.getCommentData();
-        });
+            this.getCommentData();
+          });
     }
   };
 

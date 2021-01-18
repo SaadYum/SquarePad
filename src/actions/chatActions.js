@@ -3,6 +3,7 @@ import {
   FETCH_CHATS,
   FETCH_FOLLOWING,
   FETCH_FOLLOWERS,
+  FETCH_NOTIFICATIONS,
 } from "./types";
 import * as firebase from "firebase";
 
@@ -177,5 +178,53 @@ export const fetchFollowers = () => {
           });
         });
     });
+  };
+};
+
+export const fetchNotifications = (data) => {
+  return (dispatch, getState) => {
+    console.log("FETEEEE");
+    let chatCounter = 0;
+    let notificationsArray = [];
+    firebase
+      .firestore()
+      .collection("notifications")
+      .doc(firebase.auth().currentUser.uid)
+      .collection("userNotifications")
+      .orderBy("time", "desc")
+      .onSnapshot(async (snapshot) => {
+        notificationsArray = [];
+        chatCounter = 0;
+        await Promise.all(
+          snapshot.forEach((doc) => {
+            console.log("HIT");
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(doc.data().userId)
+              .get()
+              .then((doco) => {
+                let pp = {
+                  avatar: doco.data().profilePic,
+                  content: doc.data().content,
+                  source: doc.data().source,
+                  time: doc.data().time,
+                  type: doc.data().type,
+                  userId: doc.data().userId,
+                  username: doco.data().username,
+                };
+                notificationsArray.push(pp);
+                if (doc.data().type == "chat") {
+                  chatCounter = chatCounter + 1;
+                }
+                dispatch({
+                  type: FETCH_NOTIFICATIONS,
+                  notifications: notificationsArray,
+                  unseenChats: chatCounter,
+                });
+              });
+          })
+        );
+      });
   };
 };

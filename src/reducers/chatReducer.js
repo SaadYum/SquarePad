@@ -4,6 +4,7 @@ import {
   FETCH_CHATS,
   FETCH_FOLLOWING,
   FETCH_FOLLOWERS,
+  FETCH_NOTIFICATIONS,
 } from "../actions/types";
 import * as firebase from "firebase";
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
   users: [],
   followedUsers: [],
   followers: [],
+  notifications: [],
 };
 
 const chatReducer = (state = initialState, action) => {
@@ -46,7 +48,14 @@ const chatReducer = (state = initialState, action) => {
           data: action.data,
         }),
       };
+    case FETCH_NOTIFICATIONS:
+      console.log("FETCH_NOTIFICATIONS RESULTS", action.notifications);
 
+      return {
+        ...state,
+        notifications: action.notifications,
+        unseenChats: action.unseenChats,
+      };
     default:
       return state;
   }

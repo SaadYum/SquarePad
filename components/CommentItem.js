@@ -17,7 +17,11 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 class CommentItem extends React.Component {
   firestoreUsersRef = firebase.firestore().collection("users");
   firestorePostRef = firebase.firestore().collection("posts");
-
+  firestoreNotificationsRef = firebase
+    .firestore()
+    .collection("notifications")
+    .doc(this.props.userId)
+    .collection("userNotifications");
   state = {
     avatar: Images.ProfilePicture,
     username: "",
@@ -48,14 +52,17 @@ class CommentItem extends React.Component {
           .doc(postId)
           .collection("userComments")
           .doc(comment.commentId)
-          .delete()
-          .then(() => {
-            alert("Comment Deleted!");
-            this.setState({ commentDeleted: true });
-          })
-          .catch((err) => {
-            alert(err);
-          });
+          .delete() &&
+          this.firestoreNotificationsRef
+            .doc(comment.commentId)
+            .delete()
+            .then(() => {
+              alert("Comment Deleted!");
+              this.setState({ commentDeleted: true });
+            })
+            .catch((err) => {
+              alert(err);
+            });
       }
     }
   };

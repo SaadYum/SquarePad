@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, AsyncStorage, Vibration } from "react-native";
-import { AppLoading, Notifications } from "expo";
+import { Notifications } from "expo";
+import AppLoading from "expo-app-loading";
 import * as Permissions from "expo-permissions";
 
 import { Asset } from "expo-asset";
@@ -26,6 +27,7 @@ import {
   testAction,
   fetchFollowing,
   fetchFollowers,
+  fetchNotifications,
 } from "../src/actions/chatActions";
 
 enableScreens();
@@ -38,6 +40,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchChats: () => dispatch(fetchChats()),
     fetchFollowing: () => dispatch(fetchFollowing()),
     fetchFollowers: () => dispatch(fetchFollowers()),
+    fetchNotifications: () => dispatch(fetchNotifications()),
   };
 };
 // cache app images
@@ -181,7 +184,7 @@ class SquarePadApp extends React.Component {
     }
   };
 
-  UNSAFE_componentWillMount = async () => {
+  initiateApp = async () => {
     try {
       // this.registerForPushNotificationsAsync();
       // console.disableYellowBox= true;
@@ -195,6 +198,8 @@ class SquarePadApp extends React.Component {
           this.setState({ signedIn: true });
           this.props.fetchFollowing();
           this.props.fetchFollowers();
+          this.props.fetchNotifications();
+
           // firebase
           //   .firestore()
           //   .collection("users")
@@ -283,6 +288,7 @@ class SquarePadApp extends React.Component {
   };
 
   componentDidMount = () => {
+    this.initiateApp();
     this.registerForPushNotificationsAsync();
     this._notificationSubscription = Notifications.addListener(
       this._handleNotification
