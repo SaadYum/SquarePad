@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -122,56 +122,136 @@ const onGroupInvitation = async (props) => {
 
 const NotificationItem = (props) => {
   const item = props.item;
+  const [post, setPost] = useState({});
+
+  useEffect(() => {
+    if (props.item.type == "like" || "comment") {
+      console.log("PAK");
+      firebase
+        .firestore()
+        .collection("posts")
+        .doc(item.userId)
+        .collection("userPosts")
+        .doc(item.source)
+        .get()
+        .then((doc) => {
+          console.log("POSAT", doc.data());
+          // console.log("POSAT ITEM", item);
+          setPost(doc.data());
+        });
+    }
+  }, []);
   return (
-    <TouchableOpacity
+    <Block
       style={{
         marginHorizontal: 1,
         marginTop: 5,
         borderRadius: 15,
         backgroundColor: "#f5f5f5",
       }}
-      onPress={() => {
-        let type = props.item.type;
-
-        switch (type) {
-          case "comment":
-            alert(type);
-          case "like":
-            alert(type);
-          case "follow":
-            alert(type);
-          case "request":
-            alert(type);
-          case "chat":
-            alert(type);
-          default:
-            break;
-        }
-      }}
     >
-      <Block>
-        <Block style={{ flexDirection: "row", width: width * 0.9 }}>
-          <Block style={{ margin: 5 }}>
-            <Image source={{ uri: props.item.avatar }} style={styles.avatar} />
-          </Block>
+      <TouchableOpacity
+        onPress={() => {
+          let type = props.item.type;
 
-          <Text
-            style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 7 }}
-          >
-            {props.item.username + " " + props.item.content}
-          </Text>
-          {/* <Text style={{ marginBottom: 15, marginHorizontal: 10 }}>
+          switch (type) {
+            case "comment":
+              props.navigation.navigate("Post", {
+                username: item.username,
+                title: "",
+                avatar: item.avatar,
+                image: post.image,
+                cta: "View article",
+                caption: post.caption,
+                video: post.type == "video" ? post.video : "",
+                type: post.type,
+                location: post.location.locationName,
+                postId: post.postId,
+                userId: post.userId,
+              });
+            case "like":
+              props.navigation.navigate("Post", {
+                username: item.username,
+                title: "",
+                avatar: item.avatar,
+                image: post.image,
+                cta: "View article",
+                caption: post.caption,
+                video: post.type == "video" ? post.video : "",
+                type: post.type,
+                location: post.location.locationName,
+                postId: post.postId,
+                userId: post.userId,
+              });
+
+            case "follow":
+              props.navigation.navigate("NotificationProfile", {
+                userId: props.userId,
+              });
+              alert(type);
+            // case "request":
+            //   alert(type);
+            case "chat":
+              alert(type);
+            default:
+              break;
+          }
+        }}
+      >
+        <Block>
+          <Block style={{ flexDirection: "row", width: width * 0.9 }}>
+            <Block style={{ margin: 5 }}>
+              <Image
+                source={{ uri: props.item.avatar }}
+                style={styles.avatar}
+              />
+            </Block>
+
+            <Text
+              style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 7 }}
+            >
+              {props.item.username + " " + props.item.content}
+            </Text>
+
+            {/* <Text style={{ marginBottom: 15, marginHorizontal: 10 }}>
             {props.content}
           </Text> */}
+          </Block>
         </Block>
-      </Block>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      {props.item.type == "request" ? (
+        <Block style={{ flexDirection: "row", left: 70, paddingBottom: 20 }}>
+          <Button
+            small
+            color="grey"
+            round
+            style={{ width: 100 }}
+            onPress={() => {
+              props.handleAccept(props.item.userId);
+            }}
+          >
+            Accept
+          </Button>
+          <Button
+            small
+            round
+            color="tomato"
+            style={{ width: 100, left: 10 }}
+            onPress={() => {
+              props.handleReject(props.item.userId);
+            }}
+          >
+            Reject
+          </Button>
+        </Block>
+      ) : null}
+    </Block>
   );
 };
 
 class Notifications extends React.Component {
   user = firebase.auth().currentUser;
-
+  currUserId = this.user.uid;
   constructor(props) {
     super(props);
     //does whatever stuff
@@ -194,6 +274,8 @@ class Notifications extends React.Component {
     .doc(this.user.uid)
     .collection("userNotifications");
 
+  firestoreUsersRef = firebase.firestore().collection("users");
+
   storageRef = firebase.storage().ref();
 
   renderAvatar = () => {
@@ -206,6 +288,96 @@ class Notifications extends React.Component {
   onRefresh = () => {
     // this.setState({ refreshing: true });
     // this.getNotifications();
+  };
+
+  handleAccept = (uId) => {
+    this.firestoreUsersRef
+      .doc(this.currUserId)
+      .collection("followedBy")
+      .doc(uId)
+      .set({
+        userId: uId,
+      }) &&
+      this.firestoreUsersRef
+        .doc(uId)
+        .collection("following")
+        .doc(this.currUserId)
+        .set({
+          userId: uId,
+        }) &&
+      this.firestoreUsersRef
+        .doc(this.currUserId)
+        .collection("received")
+        .doc(uId)
+        .delete() &&
+      this.firestoreUsersRef
+        .doc(uId)
+        .collection("sent")
+        .doc(this.currUserId)
+        .delete() &&
+      firebase
+        .firestore()
+        .collection("notifications")
+        .doc(this.currUserId)
+        .collection("userNotifications")
+        .doc(uId)
+        .delete() &&
+      firebase
+        .firestore()
+        .collection("notifications")
+        .doc(uId)
+        .collection("userNotifications")
+        .doc("(" + this.currUserId + ")requestAccepted")
+        .set({
+          userId: this.currUserId,
+
+          source: this.currUserId,
+          content: "accepted your follow request",
+          type: "requestAccepted",
+          time: new Date().getTime(),
+        }) &&
+      firebase
+        .firestore()
+        .collection("notifications")
+        .doc(this.currUserId)
+        .collection("userNotifications")
+        .doc(uId)
+        .set({
+          userId: uId,
+          source: uId,
+          content: "started following you",
+          type: "follow",
+          time: new Date().getTime(),
+        });
+
+    console.log("accepted");
+    // .then(() => {
+    //     this.setState({ following: true });
+    //   });
+  };
+
+  handleReject = (uId) => {
+    this.firestoreUsersRef
+      .doc(this.currUserId)
+      .collection("received")
+      .doc(uId)
+      .delete() &&
+      this.firestoreUsersRef
+        .doc(uId)
+        .collection("sent")
+        .doc(this.currUserId)
+        .delete() &&
+      firebase
+        .firestore()
+        .collection("notifications")
+        .doc(this.currUserId)
+        .collection("userNotifications")
+        .doc(uId)
+        .delete();
+    console.log("rejected");
+    // .then(() => {
+    //     this.setState({ following: true });
+    //   });
   };
 
   render() {
@@ -234,7 +406,14 @@ class Notifications extends React.Component {
               onRefresh={this.onRefresh}
             />
           }
-          renderItem={({ item }) => <NotificationItem item={item} />}
+          renderItem={({ item }) => (
+            <NotificationItem
+              navigation={this.props.navigation}
+              item={item}
+              handleAccept={this.handleAccept}
+              handleReject={this.handleReject}
+            />
+          )}
           keyExtractor={(item) => item.id}
         />
       </Block>

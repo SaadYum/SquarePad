@@ -663,6 +663,20 @@ const NotificationsStack = createStackNavigator(
         headerTransparent: false,
       }),
     },
+    NotificationProfile: {
+      screen: userProfile,
+      navigationOptions: ({ navigation }) => ({
+        header: (
+          <Header
+            title="User"
+            back
+            iconColor={"#FFF"}
+            navigation={navigation}
+          />
+        ),
+        headerTransparent: false,
+      }),
+    },
   },
   {
     cardStyle: {
