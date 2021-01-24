@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const axios = require("axios").default;
+const rp = require("request-promise");
 admin.initializeApp();
 
 const sendPushNotification = async (title, body, pushToken) => {
@@ -13,7 +13,7 @@ const sendPushNotification = async (title, body, pushToken) => {
     ios: { _displayInForeground: true },
     _displayInForeground: true,
   };
-  const response = await axios.get("https://exp.host/--/api/v2/push/send", {
+  const response = await rp("https://exp.host/--/api/v2/push/send", {
     method: "POST",
     headers: {
       Accept: "application/json",
