@@ -192,6 +192,8 @@ class Card extends React.Component {
         .doc(this.state.newLikeDocId)
         .set({
           userId: this.user.uid,
+          username: this.state.currentUsername,
+          postId: this.state.postId,
         }) &&
         this.firestoreLikeNotificationRef
           .set({
@@ -607,8 +609,9 @@ class Card extends React.Component {
               ) : (
                 <Video
                   source={{
-                    uri: item.Video,
-                    // "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+                    // uri: item.Video,
+                    uri:
+                      "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
                   }}
                   rate={1.0}
                   volume={1.0}

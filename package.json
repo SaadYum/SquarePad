@@ -32,6 +32,8 @@
     "expo-video-player": "^1.6.1",
     "expo-video-thumbnails": "~4.4.0",
     "firebase": "7.9.0",
+    "firebase-admin": "^9.4.2",
+    "firebase-functions": "^3.13.1",
     "galio-framework": "^0.5.4",
     "node-fetch": "^2.6.0",
     "prop-types": "^15.7.2",

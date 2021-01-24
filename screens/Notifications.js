@@ -125,19 +125,25 @@ const NotificationItem = (props) => {
   const [post, setPost] = useState({});
 
   useEffect(() => {
-    if (props.item.type == "like" || "comment") {
-      console.log("PAK");
+    if (props.item.type == "comment" || props.item.type == "like") {
+      console.log("USER ID", item.userId, "POST ID", item.source);
+      let userId = item.userId;
       firebase
         .firestore()
         .collection("posts")
-        .doc(item.userId)
+        .doc(firebase.auth().currentUser.uid)
         .collection("userPosts")
         .doc(item.source)
         .get()
         .then((doc) => {
-          console.log("POSAT", doc.data());
-          // console.log("POSAT ITEM", item);
-          setPost(doc.data());
+          if (doc.exists) {
+            let postData = doc.data();
+            console.log("POSAT", postData);
+            // console.log("POSAT ITEM", item);
+            setPost(postData);
+          } else {
+            console.log("POSAT", "NO DATA");
+          }
         });
     }
   }, []);
@@ -156,7 +162,7 @@ const NotificationItem = (props) => {
 
           switch (type) {
             case "comment":
-              props.navigation.navigate("Post", {
+              props.navigation.navigate("NotificationPost", {
                 username: item.username,
                 title: "",
                 avatar: item.avatar,
@@ -169,8 +175,9 @@ const NotificationItem = (props) => {
                 postId: post.postId,
                 userId: post.userId,
               });
+              break;
             case "like":
-              props.navigation.navigate("Post", {
+              props.navigation.navigate("NotificationPost", {
                 username: item.username,
                 title: "",
                 avatar: item.avatar,
@@ -183,16 +190,19 @@ const NotificationItem = (props) => {
                 postId: post.postId,
                 userId: post.userId,
               });
-
+              break;
             case "follow":
               props.navigation.navigate("NotificationProfile", {
-                userId: props.userId,
+                userId: props.item.userId,
               });
+              break;
+            // alert(type);
+            case "request":
               alert(type);
-            // case "request":
-            //   alert(type);
+              break;
             case "chat":
               alert(type);
+              break;
             default:
               break;
           }
