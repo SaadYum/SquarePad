@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const rp = require("request-promise");
+const axios = require("axios").default;
 admin.initializeApp();
 
 const sendPushNotification = async (title, body, pushToken) => {
@@ -13,20 +13,25 @@ const sendPushNotification = async (title, body, pushToken) => {
     ios: { _displayInForeground: true },
     _displayInForeground: true,
   };
-  const response = await rp("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Accept-encoding": "gzip, deflate",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
+
+  // const body = JSON.stringify(message);
+  const response = await axios.post(
+    "https://exp.host/--/api/v2/push/send",
+    JSON.stringify(message),
+    {
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   console.log("Notification Pushed with data:", message);
 
   return "Notification Pushed with data:", message;
 };
+
 exports.listenComments = functions.firestore
   .document("comments/{postId}/userComments/{userCommentId}")
   .onCreate((doc, context) => {
@@ -44,7 +49,7 @@ exports.listenComments = functions.firestore
     admin
       .firestore()
       .collection("users")
-      .doc(comment.userId)
+      .doc(comment.postUserId)
       .get()
       .then((doc) => {
         let user = doc.data();
@@ -60,11 +65,10 @@ exports.listenLikes = functions.firestore
   .document("posts/{userId}/userPosts/{postId}/likes/{likeId}")
   .onCreate((doc, context) => {
     const like = doc.data();
-
     admin
       .firestore()
       .collection("users")
-      .doc(like.userId)
+      .doc(context.params.userId)
       .get()
       .then((doc) => {
         const notification = {

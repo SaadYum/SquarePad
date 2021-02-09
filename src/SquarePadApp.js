@@ -200,6 +200,7 @@ class SquarePadApp extends React.Component {
           this.props.fetchFollowers();
           this.props.fetchNotifications();
 
+          this.registerForPushNotificationsAsync();
           // firebase
           //   .firestore()
           //   .collection("users")
@@ -289,7 +290,6 @@ class SquarePadApp extends React.Component {
 
   componentDidMount = () => {
     this.initiateApp();
-    this.registerForPushNotificationsAsync();
     this._notificationSubscription = Notifications.addListener(
       this._handleNotification
     );
