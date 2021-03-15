@@ -47,25 +47,21 @@ class SearchUser extends React.Component {
   };
   searchUser(word) {
     let userCollectionRef = firebase.firestore().collection("users");
-
+    let sWord = word.toLowerCase();
     let users = [];
     userCollectionRef
-      .where("username", "==", word)
+      .where("usernameKeywords", "array-contains", sWord)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {
           if (documentSnapshot.id != this.user.uid) {
-            users.push(documentSnapshot.data());
-            //   console.log(documentSnapshot.id);
-            this.setState({ foundUser: documentSnapshot.id, found: true, profilePic: documentSnapshot.data().profilePic });
-            
+            let userObj = documentSnapshot.data();
+            userObj.userId = documentSnapshot.id;
+            users.push(userObj);
           }
-          // console.log(this.state.foundUser)
-          // console.log(users);
         });
-        console.log(this.state.searchResults);
-        console.log(this.state.foundUser);
-
+      })
+      .then(() => {
         if (users.length == 0) {
           this.setState({
             profilePic: Images.ProfilePicture,
@@ -74,32 +70,23 @@ class SearchUser extends React.Component {
             found: false,
           });
         } else {
-          // let profilePic = this.storageRef.child(
-          //   "profilePics/(" + this.state.foundUser + ")ProfilePic"
-          // );
-          // profilePic.getDownloadURL().then((url) => {
-          //   this.setState({ profilePic: url });
-          // });
-          this.setState({ searchResults: users });
-          console.log(this.state.searchResults);
+          this.setState({ searchResults: users, found: true }, () => {
+            console.log(this.state.searchResults);
+          });
         }
       });
   }
 
-  renderAvatar = () => {
-    const { avatar, item } = this.props;
-    // if (!item.avatar) return null;
-    return (
-      <Image source={{ uri: this.state.profilePic }} style={styles.avatar} />
-    );
+  renderAvatar = (profilePic) => {
+    return <Image source={{ uri: profilePic }} style={styles.avatar} />;
   };
 
   renderUserItem = () => {
     const { navigation } = this.props;
-    if (this.state.found) {
-      return (
+
+    return (
+      <>
         <Block
-          row
           style={{
             flex: 1,
             paddingLeft: 6,
@@ -110,33 +97,37 @@ class SearchUser extends React.Component {
             borderRadius: 20,
           }}
         >
-          <Block>
-            <TouchableWithoutFeedback
-              onPress={() =>
-                navigation.navigate("searchUserProfile", {
-                  userId: this.state.foundUser,
-                })
-              }
-            >
-              {this.renderAvatar()}
-            </TouchableWithoutFeedback>
-          </Block>
-          <Block>
-            <TouchableWithoutFeedback
-              onPress={() =>
-                navigation.navigate("searchUserProfile", {
-                  userId: this.state.foundUser,
-                })
-              }
-            >
-              <Text size={20} style={styles.cardUser}>
-                {this.state.searchWord}
-              </Text>
-            </TouchableWithoutFeedback>
-          </Block>
+          {this.state.searchResults.map((user) => (
+            <Block row style={{ margin: "2%" }}>
+              <Block>
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    navigation.navigate("searchUserProfile", {
+                      userId: user.userId,
+                    })
+                  }
+                >
+                  {this.renderAvatar(user.profilePic)}
+                </TouchableWithoutFeedback>
+              </Block>
+              <Block>
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    navigation.navigate("searchUserProfile", {
+                      userId: user.userId,
+                    })
+                  }
+                >
+                  <Text size={20} style={styles.cardUser}>
+                    {user.username}
+                  </Text>
+                </TouchableWithoutFeedback>
+              </Block>
+            </Block>
+          ))}
         </Block>
-      );
-    }
+      </>
+    );
   };
 
   textInput = (word) => {

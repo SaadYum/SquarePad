@@ -609,9 +609,9 @@ class Card extends React.Component {
               ) : (
                 <Video
                   source={{
-                    // uri: item.Video,
-                    uri:
-                      "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+                    uri: item.Video,
+                    // uri:
+                    //   "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
                   }}
                   rate={1.0}
                   volume={1.0}

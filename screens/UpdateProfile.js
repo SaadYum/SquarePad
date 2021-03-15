@@ -18,6 +18,7 @@ import * as firebase from "firebase";
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
 import { ScrollView } from "react-native-gesture-handler";
+import { getKeywords } from "../src/CustomFunctions";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -55,7 +56,7 @@ class UpdateProfile extends React.Component {
 
   updateProfile = () => {
     const { username, name, email, bio } = this.state;
-    console.log(username, name, email, bio);
+    let usernameKeywords = getKeywords(username);
     this.firestoreUserRef
       .set(
         {
@@ -63,6 +64,7 @@ class UpdateProfile extends React.Component {
           name: name,
           email: email,
           bio: bio,
+          usernameKeywords: usernameKeywords,
         },
         { merge: true }
       )

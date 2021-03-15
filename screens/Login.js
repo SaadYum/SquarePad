@@ -14,6 +14,7 @@ import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { SigninUser, isUserSignedIn } from "../services/auth.service";
+import { getKeywords } from "../src/CustomFunctions";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -47,6 +48,16 @@ class Login extends React.Component {
           .doc(res.user.uid)
           .get()
           .then((doc) => {
+            let username = doc.data().username;
+            let usernameKeywords = getKeywords(username);
+
+            firebase.firestore().collection("users").doc(res.user.id).set(
+              {
+                usernameKeywords: usernameKeywords,
+              },
+              { merge: true }
+            );
+
             const userObj = doc.data();
             userObj.uid = res.user.uid;
             this.storeToken(userObj);

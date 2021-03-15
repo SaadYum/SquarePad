@@ -254,20 +254,23 @@ class AddPost extends React.Component {
       return false;
     } else {
       const response = await fetch(uri);
-      const blob = await response.blob();
+      let blob;
       let ref;
       if (file.type == "video") {
         ref = firebase
           .storage()
           .ref()
           .child("postVideos/" + fileName);
+        blob = new Blob([uri + ".mov"], { type: "video/mov" });
+        return ref.put(blob);
       } else {
         ref = firebase
           .storage()
           .ref()
           .child("postImages/" + fileName);
+        blob = await response.blob();
+        return ref.put(blob);
       }
-      return ref.put(blob);
     }
   };
 

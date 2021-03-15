@@ -27,6 +27,7 @@ import {
   setTestDeviceIDAsync,
 } from "expo-ads-admob";
 import StoryThumb from "../components/StoryThumb";
+import { getKeywords } from "../src/CustomFunctions";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -101,9 +102,41 @@ class Home extends React.Component {
   //   // this.getFollowingPosts();
   // }
 
+  updateKeywords = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .get()
+      .then((docs) => {
+        docs.forEach((doc) => {
+          let currUsername = doc.data().username;
+          let keywords = getKeywords(currUsername);
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(doc.id)
+            .set(
+              {
+                usernameKeywords: keywords,
+              },
+              { merge: true }
+            )
+            .then(() => {
+              console.log("UPDATED USER", currUsername);
+            });
+        });
+      })
+      .catch((err) => {
+        console.log("HEAVY ERR", err);
+      });
+  };
+
   componentDidMount = () => {
     // this.getProfilePic();
     // this.getLocationAsync();
+
+    // this.updateKeywords();
+
     this.getFollowingPosts();
   };
 
