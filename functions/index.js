@@ -89,3 +89,25 @@ exports.listenLikes = functions.firestore
         );
       });
   });
+
+exports.listenPosts = functions.firestore
+  .document("posts/{userId}/userPosts/{postId}")
+  .onUpdate((doc, context) => {
+    const post = doc.data();
+    admin
+      .firestore()
+      .collection("users")
+      .doc(context.params.userId)
+      .collection("followedBy")
+      .get()
+      .then((docs) => {
+        docs.forEach((doc) => {
+          admin
+            .firestore()
+            .collection("timeline")
+            .doc(doc.id)
+            .collection("timelinePosts")
+            .add(post);
+        });
+      });
+  });
