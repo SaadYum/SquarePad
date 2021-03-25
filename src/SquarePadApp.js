@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, AsyncStorage, Vibration } from "react-native";
+import { Image, Vibration } from "react-native";
 import { Notifications } from "expo";
 import AppLoading from "expo-app-loading";
 import * as Permissions from "expo-permissions";
@@ -29,6 +29,7 @@ import {
   fetchFollowers,
   fetchNotifications,
 } from "../src/actions/chatActions";
+import AsyncStorage from "@react-native-community/async-storage";
 
 enableScreens();
 

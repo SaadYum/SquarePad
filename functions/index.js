@@ -93,7 +93,8 @@ exports.listenLikes = functions.firestore
 exports.listenPosts = functions.firestore
   .document("posts/{userId}/userPosts/{postId}")
   .onUpdate((doc, context) => {
-    const post = doc.data();
+    const post = doc.after.data();
+    console.log("POST", post);
     admin
       .firestore()
       .collection("users")
@@ -101,13 +102,14 @@ exports.listenPosts = functions.firestore
       .collection("followedBy")
       .get()
       .then((docs) => {
-        docs.forEach((doc) => {
+        docs.forEach((user) => {
           admin
             .firestore()
             .collection("timeline")
-            .doc(doc.id)
+            .doc(user.id)
             .collection("timelinePosts")
-            .add(post);
+            .doc(context.params.postId)
+            .set(post);
         });
       });
   });
