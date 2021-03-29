@@ -90,26 +90,119 @@ exports.listenLikes = functions.firestore
       });
   });
 
-exports.listenPosts = functions.firestore
+exports.listenWritePost = functions.firestore
   .document("posts/{userId}/userPosts/{postId}")
-  .onUpdate((doc, context) => {
-    const post = doc.after.data();
-    console.log("POST", post);
-    admin
-      .firestore()
-      .collection("users")
-      .doc(context.params.userId)
-      .collection("followedBy")
-      .get()
-      .then((docs) => {
-        docs.forEach((user) => {
-          admin
-            .firestore()
-            .collection("timeline")
-            .doc(user.id)
-            .collection("timelinePosts")
-            .doc(context.params.postId)
-            .set(post);
+  .onWrite((change, context) => {
+    const post = change.after.data();
+    console.log("POST Written", post);
+    if (change.after.exists) {
+      return admin
+        .firestore()
+        .collection("users")
+        .doc(context.params.userId)
+        .collection("followedBy")
+        .get()
+        .then((docs) => {
+          docs.forEach((user) => {
+            admin
+              .firestore()
+              .collection("users")
+              .doc(user.id)
+              .get()
+              .then((doc) => {
+                let data = doc.data();
+                post.userId = doc.id;
+                post.userAvatar = data.profilePic;
+                post.username = data.username;
+
+                admin
+                  .firestore()
+                  .collection("timeline")
+                  .doc(user.id)
+                  .collection("timelinePosts")
+                  .doc(context.params.postId)
+                  .set(post);
+              });
+          });
         });
-      });
+    } else {
+      return admin
+        .firestore()
+        .collection("users")
+        .doc(context.params.userId)
+        .collection("followedBy")
+        .get()
+        .then((docs) => {
+          docs.forEach((user) => {
+            admin
+              .firestore()
+              .collection("timeline")
+              .doc(user.id)
+              .collection("timelinePosts")
+              .doc(context.params.postId)
+              .delete();
+          });
+        });
+    }
+  });
+
+exports.listenFollow = functions.firestore
+  .document("users/{userId}/following/{followingId}")
+  .onWrite((change, context) => {
+    const following = change.after.data();
+    console.log("Following Added", following);
+
+    if (change.after.exists) {
+      admin
+        .firestore()
+        .collection("users")
+        .doc(change.after.id)
+        .get()
+        .then((user) => {
+          let data = user.data();
+          let username = data.username;
+          let userId = user.id;
+          let userAvatar = data.profilePic;
+
+          return admin
+            .firestore()
+            .collection("posts")
+            .doc(change.after.id)
+            .collection("userPosts")
+            .get()
+            .then((posts) => {
+              posts.forEach((postDoc) => {
+                let post = postDoc.data();
+                post.userId = userId;
+                post.userAvatar = userAvatar;
+                post.username = username;
+                admin
+                  .firestore()
+                  .collection("timeline")
+                  .doc(context.params.userId)
+                  .collection("timelinePosts")
+                  .doc(postDoc.id)
+                  .set(post);
+              });
+            });
+        });
+    } else {
+      return admin
+        .firestore()
+        .collection("posts")
+        .doc(change.before.id)
+        .collection("userPosts")
+        .get()
+        .then((posts) => {
+          posts.forEach((post) => {
+            admin
+              .firestore()
+              .collection("timeline")
+              .doc(context.params.userId)
+              .collection("timelinePosts")
+              .doc(post.id)
+              .delete();
+          });
+        });
+    }
   });

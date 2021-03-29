@@ -131,12 +131,16 @@ class Home extends React.Component {
       });
   };
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     // this.getProfilePic();
     // this.getLocationAsync();
 
     // this.updateKeywords();
-
+    await this.getFollowedUsers().then(async () => {
+      // console.log(this.state.followedUsers);
+      this.getMyStories();
+      this.getFollowingStories();
+    });
     this.getFollowingPosts();
   };
 
@@ -318,74 +322,39 @@ class Home extends React.Component {
 
   // Get all posts of each user and push them in a same array
   getFollowingPosts = async () => {
-    // 1. Get all the users the current user is following
-    await this.getFollowedUsers().then(async () => {
-      // console.log(this.state.followedUsers);
-      this.getMyStories();
-      this.getFollowingStories();
+    let allPosts = [];
+    firebase
+      .firestore()
+      .collection("timeline")
+      .doc(this.user.uid)
+      .collection("timelinePosts")
+      .orderBy("time", "desc")
+      .get()
+      .then((posts) => {
+        posts.forEach((post) => {
+          let data = post.data();
+          let article = {
+            username: data.username,
+            userId: data.userId,
+            title: "post",
+            avatar: data.userAvatar,
+            image: data.image,
+            cta: "cta",
 
-      let users = this.state.followedUsers;
-      let allPosts = [];
-      let lastDocArr = [];
+            video: data.type == "video" ? data.video : "",
+            type: data.type,
+            caption: data.caption,
+            location: data.location.locationName,
+            postId: data.postId,
+            timeStamp: data.time,
+            horizontal: true,
+          };
+          allPosts.push(article);
+        });
 
-      // 2. Get posts of each user seperately and putting them in one array.
-      //  users.forEach(async (user) => {
-      for (const user of users) {
-        let userObj = new Object();
-        userObj.user = user;
-
-        // console.log("Avatar:" +this.state.avatar)
-        await this.firestoreUsersRef
-          .doc(user)
-          .get()
-          .then(async (document) => {
-            this.setState({
-              userData: document.data(),
-              avatar: document.data().profilePic,
-            });
-
-            const startQuery = this.firestorePostRef
-              .doc(user)
-              .collection("userPosts")
-              .orderBy("time", "desc");
-
-            await startQuery.get().then(async (snapshot) => {
-              if (snapshot.size > 0) {
-                var lastVisible = snapshot.docs[snapshot.docs.length - 1];
-                //  this.setState({lastDoc: lastVisible.id});
-                userObj.lastDoc = lastVisible.data().postId;
-
-                lastDocArr.push(userObj);
-              }
-              snapshot.forEach((doc) => {
-                let data = doc.data();
-                let article = {
-                  username: this.state.userData.username,
-                  userId: user,
-                  title: "post",
-                  avatar: this.state.avatar,
-                  image: data.image,
-                  cta: "cta",
-
-                  video: data.type == "video" ? data.video : "",
-                  type: data.type,
-                  caption: data.caption,
-                  location: data.location.locationName,
-                  postId: data.postId,
-                  timeStamp: data.time,
-                  horizontal: true,
-                };
-                allPosts.push(article);
-              });
-            });
-
-            // console.log(lastDocArr)
-            this.setState({ posts: allPosts });
-          });
-      }
-      this.setState({ xyz: lastDocArr });
-    });
-    console.log(this.state.xyz);
+        // console.log(lastDocArr)
+        this.setState({ posts: allPosts });
+      });
   };
 
   // Get More posts on scrolling posts of each user and push them in a same array
