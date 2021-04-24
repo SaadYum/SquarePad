@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "498031225132",
+    "firebase_url": "https://square-pad-3a630.firebaseio.com",
+    "project_id": "square-pad-3a630",
+    "storage_bucket": "square-pad-3a630.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498031225132:android:788c79c6e859c808dd2489",
+        "android_client_info": {
+          "package_name": "com.squarepad.squarepadApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498031225132-o39t7as2i2kap8h9v0fu9mff9qsstd4h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.squarepad.squarepadApp",
+            "certificate_hash": "d8b37b9841bd727f5b25b3074378d88f397249e5"
+          }
+        },
+        {
+          "client_id": "498031225132-dmhn6s000heskk31bc5073fin018dl33.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBohtd40LpvwLoPrkZ94Mx0j3a94d7gKos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498031225132-dmhn6s000heskk31bc5073fin018dl33.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "498031225132-tr3nisp1o1es9uucee6227ietihvvk1c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "host.exp.exponent"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

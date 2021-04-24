@@ -6,7 +6,7 @@ import { Card, Button } from "../components";
 import articles from "../constants/articles";
 import { logOut } from "../services/auth.service";
 
-const { width } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 
 class Post extends React.Component {
   constructor(props) {

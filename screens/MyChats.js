@@ -150,7 +150,7 @@ class MyChats extends Component {
 
     let users = [];
     userCollectionRef
-      .where("username", "==", word)
+      .where("usernameKeywords", "array-contains", word.toLowerCase())
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {

@@ -30,11 +30,22 @@ import {
 } from "react-native-gesture-handler";
 import { getPosts } from "../constants/Images";
 import { connect } from "react-redux";
+import {
+  fetchNotifications,
+  resetNotifications,
+} from "../src/actions/chatActions";
 
 const mapStateToProps = (state) => {
   // console.log("YESS", state)
   return {
     notifications: state.chatReducer.notifications,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchNotifications: () => dispatch(fetchNotifications()),
+    resetNotifications: () => dispatch(resetNotifications()),
   };
 };
 
@@ -218,14 +229,21 @@ const NotificationItem = (props) => {
             </Block>
 
             <Text
-              style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 7 }}
+              style={{
+                marginTop: 20,
+                marginHorizontal: 10,
+                marginBottom: 7,
+                fontWeight: "bold",
+              }}
             >
-              {props.item.username + " " + props.item.content}
+              {props.item.username}
             </Text>
 
-            {/* <Text style={{ marginBottom: 15, marginHorizontal: 10 }}>
-            {props.content}
-          </Text> */}
+            <Text
+              style={{ marginTop: 20, marginBottom: 7, marginHorizontal: 10 }}
+            >
+              {props.item.content}
+            </Text>
           </Block>
         </Block>
       </TouchableOpacity>
@@ -266,7 +284,17 @@ class Notifications extends React.Component {
     super(props);
     //does whatever stuff
     this.state = {
-      notifications: this.props.notifications,
+      notifications: this.props.notifications.length
+        ? this.props.notifications
+        : [
+            {
+              content: "",
+              source: "",
+              time: "",
+              type: "",
+              userId: "",
+            },
+          ],
       refreshing: false,
     };
   }
@@ -274,7 +302,21 @@ class Notifications extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.notifications != this.props.notifications) {
       console.log("NEW NOTIFICATIONS");
-      this.setState({ notifications: this.props.notifications });
+      if (this.props.notifications.length) {
+        this.setState({ notifications: this.props.notifications });
+      } else {
+        this.setState({
+          notifications: [
+            {
+              content: "No Notifications Yet!",
+              source: "",
+              time: "",
+              type: "",
+              userId: "",
+            },
+          ],
+        });
+      }
     }
   }
 
@@ -298,6 +340,8 @@ class Notifications extends React.Component {
   onRefresh = () => {
     // this.setState({ refreshing: true });
     // this.getNotifications();
+    this.props.resetNotifications();
+    this.props.fetchNotifications();
   };
 
   handleAccept = (uId) => {
@@ -392,20 +436,35 @@ class Notifications extends React.Component {
 
   render() {
     return (
-      <Block center style={{ marginTop: 10, height: height * 0.9 }}>
+      <Block
+        center
+        style={{
+          marginTop: 10,
+          height: Platform.OS == "ios" ? height * 0.8 : height * 0.7,
+        }}
+      >
         {this.state.notifications.length == 0 && (
           // <ActivityIndicator size="large" />
-          <Block
-            style={{
-              backgroundColor: "#ebebeb",
-              borderRadius: 20,
-              width: width * 0.9,
-              padding: 10,
-            }}
-          >
-            <Text> No notifications yet.</Text>
-            <Text> This feature is under construction.</Text>
-          </Block>
+          <>
+            <FlatList
+              data={this.state.notifications}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this.onRefresh}
+                />
+              }
+              renderItem={({ item }) => (
+                <NotificationItem
+                  navigation={this.props.navigation}
+                  item={item}
+                  handleAccept={this.handleAccept}
+                  handleReject={this.handleReject}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </>
         )}
 
         <FlatList
@@ -519,4 +578,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(mapStateToProps, null)(Notifications);
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications);

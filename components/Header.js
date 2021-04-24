@@ -155,11 +155,11 @@ class Header extends React.Component {
     switch (routeName) {
       case "Home":
         return [
-          <NotificationButton
-            key="notification-home"
-            navigation={navigation}
-            isWhite={white}
-          />,
+          // <NotificationButton
+          //   key="notification-home"
+          //   navigation={navigation}
+          //   isWhite={white}
+          // />,
           <ChatButton
             key="chat-home"
             navigation={navigation}

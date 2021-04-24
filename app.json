@@ -19,6 +19,9 @@
     "ios": {
       "supportsTablet": true,
       "config": {
+        "googleSignIn": {
+          "reservedClientId": "498031225132-tr3nisp1o1es9uucee6227ietihvvk1c.apps.googleusercontent.com"
+        },
         "googleMapsApiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"
       },
 
@@ -26,6 +29,7 @@
       "buildNumber": "1.0.0"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyC3jftuRYj7vJ5cB-HGvzq6fC60WXOCtoM"

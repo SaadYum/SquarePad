@@ -28,6 +28,7 @@ import {
   fetchFollowing,
   fetchFollowers,
   fetchNotifications,
+  resetNotifications,
 } from "../src/actions/chatActions";
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -42,6 +43,7 @@ const mapDispatchToProps = (dispatch) => {
     fetchFollowing: () => dispatch(fetchFollowing()),
     fetchFollowers: () => dispatch(fetchFollowers()),
     fetchNotifications: () => dispatch(fetchNotifications()),
+    resetNotifications: () => dispatch(resetNotifications()),
   };
 };
 // cache app images
@@ -193,6 +195,8 @@ class SquarePadApp extends React.Component {
       let data = JSON.parse(userData);
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
+          this.props.resetNotifications();
+
           this.setState({ userId: user.uid });
           // this.getLocationAsync();
           // console.log("MY user", this.state.userId);

@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   Image,
   Alert,
+  Dimensions,
 } from "react-native";
 import PropTypes from "prop-types";
 import { Button, Block, Text } from "galio-framework";
@@ -14,6 +15,8 @@ import argonTheme from "../constants/Theme";
 import { Images } from "../constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+var width = Dimensions.get("window").width;
+var height = Dimensions.get("window").height;
 class CommentItem extends React.Component {
   firestoreUsersRef = firebase.firestore().collection("users");
   firestorePostRef = firebase.firestore().collection("posts");
@@ -34,7 +37,7 @@ class CommentItem extends React.Component {
   };
 
   deleteComment = async () => {
-    const { comment, postId } = this.props;
+    const { comment, postId, postUserId, userId } = this.props;
     const selection = await new Promise((resolve) => {
       const title = "Delete!";
       const message = "Do you want to delete the comment!";
@@ -48,9 +51,11 @@ class CommentItem extends React.Component {
       if (comment.username == this.state.currentUsername) {
         firebase
           .firestore()
-          .collection("comments")
+          .collection("posts")
+          .doc(postUserId)
+          .collection("userPosts")
           .doc(postId)
-          .collection("userComments")
+          .collection("comments")
           .doc(comment.commentId)
           .delete() &&
           this.firestoreNotificationsRef
@@ -68,7 +73,7 @@ class CommentItem extends React.Component {
   };
   getCurrentUsername() {
     this.firestoreUsersRef
-      .doc(firebase.auth().currentUser.uid)
+      .doc(this.props.userId)
       .get()
       .then((document) => {
         this.setState({ currentUsername: document.data().username });
@@ -127,10 +132,12 @@ const styles = StyleSheet.create({
   },
   comment: {
     flex: 1,
-    paddingTop: 8,
+    flexDirection: "row",
+    marginTop: 8,
+    width: width * 0.65,
     paddingLeft: 10,
     marginLeft: 5,
-    height: 28,
+    // height: "auto",
     borderWidth: 1,
     borderRadius: 10,
     backgroundColor: "#fcfcfc",

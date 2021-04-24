@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   ScrollView,
   AsyncStorage,
+  FlatList,
   RefreshControl,
 } from "react-native";
 import { Block, Icon, theme, Text } from "galio-framework";
@@ -18,7 +19,7 @@ import * as firebase from "firebase";
 import * as Location from "expo-location";
 
 import { Images } from "../constants";
-import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import {
   AdMobBanner,
   AdMobInterstitial,
@@ -93,6 +94,7 @@ class Home extends React.Component {
     xyz: [],
     stories: [],
     myStories: [],
+    lastDoc: "",
   };
 
   // componentWillMount= () =>{
@@ -109,7 +111,7 @@ class Home extends React.Component {
       .get()
       .then((docs) => {
         docs.forEach((doc) => {
-          let currUsername = doc.data().username;
+          let currUsername = doc.data().name.toLowerCase();
           let keywords = getKeywords(currUsername);
           firebase
             .firestore()
@@ -117,7 +119,7 @@ class Home extends React.Component {
             .doc(doc.id)
             .set(
               {
-                usernameKeywords: keywords,
+                nameKeywords: keywords,
               },
               { merge: true }
             )
@@ -323,14 +325,17 @@ class Home extends React.Component {
   // Get all posts of each user and push them in a same array
   getFollowingPosts = async () => {
     let allPosts = [];
+    this.setState({ allPosts: [] });
     firebase
       .firestore()
       .collection("timeline")
       .doc(this.user.uid)
       .collection("timelinePosts")
       .orderBy("time", "desc")
-      .get()
-      .then((posts) => {
+      .limit(5)
+      .onSnapshot((posts) => {
+        let lastDoc = posts.docs[posts.docs.length - 1];
+        this.setState({ lastDoc });
         posts.forEach((post) => {
           let data = post.data();
           let article = {
@@ -353,93 +358,55 @@ class Home extends React.Component {
         });
 
         // console.log(lastDocArr)
-        this.setState({ posts: allPosts });
+        this.setState({ posts: allPosts }, () =>
+          console.log("ALL POSTS", this.state.posts)
+        );
       });
   };
 
   // Get More posts on scrolling posts of each user and push them in a same array
   getMorePosts = async () => {
-    // console.log(this.state.followedUsers);
+    this.setState({ refreshing: true });
 
-    let users = this.state.followedUsers;
-    let allPosts = this.state.posts;
-    let lastDocArr = this.state.xyz;
-    let userObj = {};
-    let currentUserObj = {};
-    // 2. Get posts of each user seperately and putting them in one array.
-    //  users.forEach(async (user) => {
-    for (const user of users) {
-      console.log("PRE ARRAY:            " + lastDocArr);
+    let allPosts = this.state.posts.length ? this.state.posts : [];
+    let lastDoc = this.state.lastDoc;
+    firebase
+      .firestore()
+      .collection("timeline")
+      .doc(this.user.uid)
+      .collection("timelinePosts")
+      .orderBy("time", "desc")
+      .startAfter(lastDoc)
+      .limit(5)
+      .onSnapshot((posts) => {
+        let lastDoc = posts.docs[posts.docs.length - 1];
+        this.setState({ lastDoc });
+        posts.forEach((post) => {
+          let data = post.data();
+          let article = {
+            username: data.username,
+            userId: data.userId,
+            title: "post",
+            avatar: data.userAvatar,
+            image: data.image,
+            cta: "cta",
 
-      userObj.user = user;
-      lastDocArr.map((userObj) => {
-        console.log(userObj);
-        if (userObj.user == user) {
-          currentUserObj = userObj;
-          lastDocArr.pop();
-        }
+            video: data.type == "video" ? data.video : "",
+            type: data.type,
+            caption: data.caption,
+            location: data.location.locationName,
+            postId: data.postId,
+            timeStamp: data.time,
+            horizontal: true,
+          };
+          allPosts.push(article);
+        });
+
+        // console.log(lastDocArr)
+        this.setState({ posts: allPosts, refreshing: false }, () =>
+          console.log("ALL POSTS", this.state.posts)
+        );
       });
-
-      this.setState({ lastDocArr: lastDocArr });
-      console.log("NEW ARRAY:            " + lastDocArr);
-
-      let currentUserLastDoc = currentUserObj.lastDoc;
-      console.log("Current User Last Doc is: " + currentUserLastDoc);
-      await this.getProfilePic(user).then(async () => {
-        // console.log("Avatar:" +this.state.avatar)
-        await this.firestoreUsersRef
-          .doc(user)
-          .get()
-          .then(async (document) => {
-            this.setState({ userData: document.data() });
-
-            const nextQuery = this.firestorePostRef
-              .doc(user)
-              .collection("userPosts")
-              .orderBy("time", "desc")
-              .limit(1)
-              .startAfter(currentUserLastDoc)
-              .limit(1);
-            // console.log(document.data());
-
-            await nextQuery.get().then(async (snapshot) => {
-              var lastVisible = snapshot.docs[snapshot.docs.length - 1];
-              this.setState({ lastDoc: lastVisible.id });
-              userObj.lastDoc = lastVisible.data().postId;
-              snapshot.forEach((doc) => {
-                let article = {
-                  username: this.state.userData.username,
-                  userId: user,
-                  title: "post",
-                  avatar: this.state.avatar,
-                  image: doc.data().image,
-                  cta: "cta",
-                  caption: doc.data().caption,
-                  location: doc.data().location.locationName,
-                  postId: doc.data().postId,
-                  timeStamp: doc.data().time,
-                  horizontal: true,
-                };
-                allPosts.push(article);
-              });
-              lastDocArr.push(userObj);
-            });
-
-            this.setState({ posts: allPosts });
-          });
-      });
-      // allPosts.sort(function(a,b){
-      //   // Turn your strings into dates, and then subtract them
-      //   // to get a value that is either negative, positive, or zero.
-      //   return new Date(b.timeStamp) - new Date(a.timeStamp) ;
-      // });
-
-      // this.setState({posts: allPosts});
-      // console.log(this.state.posts);
-    }
-
-    this.setState({ xyz: lastDocArr });
-    console.log(lastDocArr);
   };
 
   getProfilePic = async (user) => {
@@ -469,11 +436,11 @@ class Home extends React.Component {
       });
   };
   onRefresh = () => {
-    this.setState({ refreshing: true });
-
-    this.getFollowingPosts().then(() => {
-      this.getFollowingStories();
-      this.setState({ refreshing: false });
+    this.setState({ refreshing: true }, () => {
+      this.getFollowingPosts().then(() => {
+        this.getFollowingStories();
+        this.setState({ refreshing: false });
+      });
     });
   };
 
@@ -617,24 +584,32 @@ class Home extends React.Component {
   renderArticles = () => {
     return (
       <Block flex={8} style={{ marginTop: 5 }}>
-        {!this.state.posts.length > 0 && (
+        {!this.state.posts.length > 0 && !this.state.refreshing && (
           <Block style={{ paddingTop: 30 }}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size="large" color="gray" />
           </Block>
         )}
         <FlatList
-          showsVerticalScrollIndicator={false}
-          onScrollEndDrag={this.getNextPosts}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={this.onRefresh}
             />
           }
+          showsVerticalScrollIndicator={false}
+          onEndReached={this.getMorePosts}
+          onEndReachedThreshold={3}
           data={this.state.posts}
           renderItem={({ item }) => <Card item={item} for={"feed"} full />}
           keyExtractor={(item) => item.postId}
         />
+
+        {/* <TouchableOpacity
+          style={{ backgroundColor: "grey" }}
+          onPress={this.getMorePosts}
+        >
+          Get more posts
+        </TouchableOpacity> */}
       </Block>
     );
   };

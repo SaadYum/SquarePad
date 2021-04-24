@@ -87,7 +87,7 @@ class Register extends React.Component {
               <Text color="#8898AA" size={12}>
                 Sign up with
               </Text>
-              <Block row style={{ marginTop: theme.SIZES.BASE }}>
+              {/* <Block row style={{ marginTop: theme.SIZES.BASE }}>
                 <Button
                   style={{ ...styles.socialButtons, marginRight: 30 }}
                   onPress={() => {
@@ -122,7 +122,7 @@ class Register extends React.Component {
                     <Text style={styles.socialTextButtons}>GOOGLE</Text>
                   </Block>
                 </Button>
-              </Block>
+              </Block> */}
             </Block>
 
             <Block flex>

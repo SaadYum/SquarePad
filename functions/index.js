@@ -96,34 +96,43 @@ exports.listenWritePost = functions.firestore
     const post = change.after.data();
     console.log("POST Written", post);
     if (change.after.exists) {
-      return admin
+      admin
         .firestore()
         .collection("users")
         .doc(context.params.userId)
-        .collection("followedBy")
         .get()
-        .then((docs) => {
-          docs.forEach((user) => {
-            admin
-              .firestore()
-              .collection("users")
-              .doc(user.id)
-              .get()
-              .then((doc) => {
-                let data = doc.data();
-                post.userId = doc.id;
-                post.userAvatar = data.profilePic;
-                post.username = data.username;
+        .then((postUser) => {
+          let postUserData = postUser.data();
 
+          return admin
+            .firestore()
+            .collection("users")
+            .doc(context.params.userId)
+            .collection("followedBy")
+            .get()
+            .then((docs) => {
+              docs.forEach((user) => {
                 admin
                   .firestore()
-                  .collection("timeline")
+                  .collection("users")
                   .doc(user.id)
-                  .collection("timelinePosts")
-                  .doc(context.params.postId)
-                  .set(post);
+                  .get()
+                  .then((doc) => {
+                    let data = doc.data();
+                    post.userId = context.params.userId;
+                    post.userAvatar = postUserData.profilePic;
+                    post.username = postUserData.username;
+
+                    admin
+                      .firestore()
+                      .collection("timeline")
+                      .doc(user.id)
+                      .collection("timelinePosts")
+                      .doc(context.params.postId)
+                      .set(post);
+                  });
               });
-          });
+            });
         });
     } else {
       return admin

@@ -75,6 +75,34 @@ class SearchUser extends React.Component {
           });
         }
       });
+    userCollectionRef
+      .where("nameKeywords", "array-contains", sWord)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((documentSnapshot) => {
+          if (documentSnapshot.id != this.user.uid) {
+            if (!users.find((u) => u.userId == documentSnapshot.id)) {
+              let userObj = documentSnapshot.data();
+              userObj.userId = documentSnapshot.id;
+              users.push(userObj);
+            }
+          }
+        });
+      })
+      .then(() => {
+        if (users.length == 0) {
+          this.setState({
+            profilePic: Images.ProfilePicture,
+            searchResults: [],
+            foundUser: "",
+            found: false,
+          });
+        } else {
+          this.setState({ searchResults: users, found: true }, () => {
+            console.log(this.state.searchResults);
+          });
+        }
+      });
   }
 
   renderAvatar = (profilePic) => {

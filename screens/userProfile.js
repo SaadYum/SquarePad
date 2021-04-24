@@ -40,8 +40,11 @@ class userProfile extends React.Component {
     followedUsers: 0,
     followedByUsers: 0,
     publicProfile: false,
-    closeFriend: false
+    sent: false,
+    closeFriend: false,
   };
+
+  myId = firebase.auth().currentUser.uid;
 
   firestoreFollowingRef = firebase
     .firestore()
@@ -54,12 +57,10 @@ class userProfile extends React.Component {
     .doc(this.state.currentUser)
     .collection("followedBy");
   // Check wether the user has previously added any profile picture
-  UNSAFE_componentWillMount = () => {
+  componentDidMount = () => {
     this.getFollowedUsers();
     this.setState({ currentUser: this.props.navigation.getParam("userId") });
     console.log(this.state.currentUser);
-    const { navigation } = this.props;
-    this.setState({ currentUser: navigation.getParam("userId") });
     this.getProfilePic();
   };
 
@@ -71,15 +72,33 @@ class userProfile extends React.Component {
       .get()
       .then((doc) => {
         let profilePic = doc.data().profilePic;
+        let publicProfile = doc.data().publicProfile;
+
         if (typeof profilePic != "undefined") {
           this.setState({ profilePic: profilePic });
         } else {
           this.setState({ profilePic: Images.ProfilePicture });
         }
+        this.setState({ publicProfile: publicProfile });
       })
       .catch((err) => {
         console.log(err);
         this.setState({ profilePic: Images.ProfilePicture });
+      });
+
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(this.myId)
+      .collection("sent")
+      .doc(this.state.currentUser)
+      .get()
+      .then((docRef) => {
+        if (docRef.exists) {
+          this.setState({ sent: true });
+        } else {
+          this.setState({ sent: false });
+        }
       });
   };
 
@@ -138,7 +157,7 @@ class userProfile extends React.Component {
       });
   };
 
-  componentDidMount() {
+  UNSAFE_componentWillMount() {
     this.getPosts();
 
     this.getRealTimeUpdates();
@@ -159,7 +178,7 @@ class userProfile extends React.Component {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
-          this.setState({ following: true });
+          this.setState({ following: true, sent: false });
         } else {
           this.setState({ following: false });
         }
@@ -183,57 +202,149 @@ class userProfile extends React.Component {
       });
   };
 
-  handleFollow = () => {
+  handleFollow = async () => {
     if (!this.state.following) {
-      console.log(
-        firebase.auth().currentUser.uid +
-          " is following " +
-          this.state.currentUser
-      );
-      this.setState({ following: true });
-        
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("following")
-        .doc(this.state.currentUser)
-        .set({
-          userId: this.state.currentUser,
-        })
-        .then(() => {
+      if (this.state.publicProfile) {
+        console.log(
+          firebase.auth().currentUser.uid +
+            " is following " +
+            this.state.currentUser
+        );
+        this.setState({ following: true });
+
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .collection("following")
+          .doc(this.state.currentUser)
+          .set({
+            userId: this.state.currentUser,
+          })
+          .then(() => {
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(this.state.currentUser)
+              .collection("followedBy")
+              .doc(firebase.auth().currentUser.uid)
+              .set({
+                userId: firebase.auth().currentUser.uid,
+              });
+            this.setState({ following: true });
+          })
+          .catch((err) => {
+            this.setState({ following: false });
+          });
+      } else if (!this.state.sent) {
+        // NOT A PUBLIC PROFILE ---> Send Request
+
+        this.setState({ sent: true });
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(this.myId)
+          .collection("sent")
+          .doc(this.state.currentUser)
+          .set({
+            userId: this.state.currentUser,
+          })
+          .then(() => {
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(this.state.currentUser)
+              .collection("received")
+              .doc(this.myId)
+              .set({
+                userId: this.myId,
+              })
+              .then(() => {
+                console.log("REQUEST SENT!");
+
+                firebase
+                  .firestore()
+                  .collection("notifications")
+                  .doc(this.state.currentUser)
+                  .collection("userNotifications")
+                  .doc(this.myId)
+                  .set({
+                    content: "sent you a follow request",
+                    source: this.myId,
+                    time: new Date().getTime(),
+                    type: "request",
+                    userId: this.myId,
+                  });
+              })
+              .catch(() => {
+                this.setState({ sent: false });
+              });
+          })
+          .catch((err) => {
+            this.setState({ sent: false });
+          });
+      } else {
+        const selection = await new Promise((resolve) => {
+          const title = "Follow Request!";
+          const message = "Do you want to cancel request!";
+          const buttons = [
+            { text: "Yes", onPress: () => resolve("cancel") },
+            { text: "No", onPress: () => resolve(null) },
+          ];
+          Alert.alert(title, message, buttons);
+        });
+
+        if (selection == "cancel") {
+          this.setState({ sent: false });
           firebase
             .firestore()
             .collection("users")
+            .doc(this.myId)
+            .collection("sent")
             .doc(this.state.currentUser)
-            .collection("followedBy")
-            .doc(firebase.auth().currentUser.uid)
-            .set({
-              userId: firebase.auth().currentUser.uid,
+            .delete()
+            .then(() => {
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(this.state.currentUser)
+                .collection("received")
+                .doc(this.myId)
+                .delete()
+                .then(() => {
+                  console.log("REQUEST CANCELLED!");
+                });
             });
-          this.setState({ following: true });
-        }).catch((err)=>{
-          this.setState({ following: false });
-
-        });
+        }
+      }
     } else {
-      console.log("UNFOLLOWED");
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("following")
-        .doc(this.state.currentUser)
-        .delete()
-        .then(() => {
-          this.setState({ following: false });
-        }).catch(err=>{
-          this.setState({ following: true });
-
-        })
+      const selection = await new Promise((resolve) => {
+        const title = "Private Profile!";
+        const message = "Unfollow?";
+        const buttons = [
+          { text: "Yes", onPress: () => resolve("continue") },
+          { text: "No", onPress: () => resolve(null) },
+        ];
+        Alert.alert(title, message, buttons);
+      });
+      if (selection == "continue") {
+        console.log("UNFOLLOWED");
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .collection("following")
+          .doc(this.state.currentUser)
+          .delete()
+          .then(() => {
+            this.setState({ following: false });
+          })
+          .catch((err) => {
+            this.setState({ following: true });
+          });
+      }
     }
   };
-
 
   handleCloseFriend = () => {
     if (!this.state.closeFriend) {
@@ -242,46 +353,40 @@ class userProfile extends React.Component {
           " is closeFriends with " +
           this.state.currentUser
       );
-      this.setState({ closeFriend: true },()=>{
-        
-        
+      this.setState({ closeFriend: true }, () => {
         firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("closeFriends")
-        .doc(this.state.currentUser)
-        .set({
-          userId: this.state.currentUser,
-        }).then(()=>{
-                          this.setState({ closeFriend: true })
-
-        })
-        .catch(err=>
-          {
-                              this.setState({ closeFriend:false })
-
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .collection("closeFriends")
+          .doc(this.state.currentUser)
+          .set({
+            userId: this.state.currentUser,
           })
+          .then(() => {
+            this.setState({ closeFriend: true });
+          })
+          .catch((err) => {
+            this.setState({ closeFriend: false });
+          });
       });
     } else {
-      
-      this.setState({ closeFriend: false }, ()=>{
-
+      this.setState({ closeFriend: false }, () => {
         firebase
-        .firestore()
-        .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .collection("closeFriends")
-        .doc(this.state.currentUser)
-        .delete()
-        .then(() => {
-          this.setState({ closeFriend: false });
-        }).catch(err=>{
-          this.setState({ closeFriend: true });
-
-        })
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .collection("closeFriends")
+          .doc(this.state.currentUser)
+          .delete()
+          .then(() => {
+            this.setState({ closeFriend: false });
+          })
+          .catch((err) => {
+            this.setState({ closeFriend: true });
+          });
       });
-      }
+    }
   };
 
   renderFollow = () => {
@@ -297,7 +402,7 @@ class userProfile extends React.Component {
               marginTop: 20,
               backgroundColor: "#e6e6e6",
               borderRadius: 25,
-              height: 40
+              height: 40,
             }}
             onPress={this.handleFollow}
           >
@@ -317,31 +422,41 @@ class userProfile extends React.Component {
               marginTop: 20,
               backgroundColor: "#ff6a4e",
               borderRadius: 25,
-              height: 40
+              height: 40,
             }}
             onPress={this.handleFollow}
           >
-            Follow
+            {!this.state.publicProfile && this.state.sent ? (
+              <Text style={{ color: "white" }}>Requested</Text>
+            ) : (
+              <Text style={{ color: "white" }}>Follow</Text>
+            )}
           </Button>
         </Block>
       );
     }
   };
   renderCloseFriends = () => {
-      return (
-        <Block style={{backgroundColor:"whitesmoke", borderRadius:20, paddingBottom: 10, marginTop: 10}}>
-            <Block center style={{ marginTop: 5 }}>
-              <Text> Close Friends </Text>
-              <Switch
-                style={{ marginTop: 5 }}
-                color={"#e6e6e6"}
-                value={this.state.closeFriend}
-                onValueChange={() => this.handleCloseFriend()}
-              />
-            </Block>
+    return (
+      <Block
+        style={{
+          backgroundColor: "whitesmoke",
+          borderRadius: 20,
+          paddingBottom: 10,
+          marginTop: 10,
+        }}
+      >
+        <Block center style={{ marginTop: 5 }}>
+          <Text> Close Friends </Text>
+          <Switch
+            style={{ marginTop: 5 }}
+            color={"#e6e6e6"}
+            value={this.state.closeFriend}
+            onValueChange={() => this.handleCloseFriend()}
+          />
         </Block>
-      );
-    
+      </Block>
+    );
   };
 
   getPermissionAsync = async () => {
@@ -373,11 +488,10 @@ class userProfile extends React.Component {
               </TouchableOpacity>
             </Block>
 
-          <Block >
-
-            {this.renderFollow()}
-            {this.renderCloseFriends()}
-          </Block>
+            <Block>
+              {this.renderFollow()}
+              {this.renderCloseFriends()}
+            </Block>
           </Block>
           <Block style={styles.info}>
             <Block row space="between">
@@ -451,7 +565,8 @@ class userProfile extends React.Component {
                       View all
                     </Button> */}
             </Block>
-            {((this.state.following && !this.state.publicProfile) || this.state.publicProfile) && (
+            {((this.state.following && !this.state.publicProfile) ||
+              this.state.publicProfile) && (
               <Block>
                 <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
                   <Block row space="between" style={{ flexWrap: "wrap" }}>
@@ -460,11 +575,9 @@ class userProfile extends React.Component {
                       <TouchableOpacity
                         key={postIndex}
                         onPress={() => {
-                          let route  = this.props.navigation.state.routeName;
+                          let route = this.props.navigation.state.routeName;
 
-                          if(route == "Profile"){
-
-                            
+                          if (route == "Profile") {
                             // console.log(postIndex);
                             this.props.navigation.navigate("Post", {
                               username: this.state.username,
@@ -477,7 +590,7 @@ class userProfile extends React.Component {
                               postId: post.postId,
                               userId: this.state.currentUser,
                             });
-                          }else if(route == "userProfile"){
+                          } else if (route == "userProfile") {
                             // console.log(postIndex);
                             this.props.navigation.navigate("userPost", {
                               username: this.state.username,
@@ -490,20 +603,18 @@ class userProfile extends React.Component {
                               postId: post.postId,
                               userId: this.state.currentUser,
                             });
-
-                          }else{
-                              this.props.navigation.navigate("searchUserPost", {
-                                username: this.state.username,
-                                title: "",
-                                avatar: this.state.profilePic,
-                                image: post.image,
-                                cta: "View article",
-                                caption: post.caption,
-                                location: post.location.locationName,
-                                postId: post.postId,
-                                userId: this.state.currentUser,
-                              });
-
+                          } else {
+                            this.props.navigation.navigate("searchUserPost", {
+                              username: this.state.username,
+                              title: "",
+                              avatar: this.state.profilePic,
+                              image: post.image,
+                              cta: "View article",
+                              caption: post.caption,
+                              location: post.location.locationName,
+                              postId: post.postId,
+                              userId: this.state.currentUser,
+                            });
                           }
                         }}
                       >
@@ -520,7 +631,7 @@ class userProfile extends React.Component {
               </Block>
             )}
 
-            {(!this.state.following && !this.state.publicProfile) && (
+            {!this.state.following && !this.state.publicProfile && (
               <Text h5 style={{ alignSelf: "center" }}>
                 Private profile!
               </Text>

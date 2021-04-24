@@ -21,7 +21,7 @@ class ChatVideo extends React.Component {
           volume={1.0}
           isMuted={false}
           resizeMode="contain"
-          shouldPlay
+          // shouldPlay
           // isLooping
           useNativeControls
           style={{ width: width, height: height * 0.8 }}

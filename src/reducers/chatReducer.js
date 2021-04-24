@@ -5,6 +5,7 @@ import {
   FETCH_FOLLOWING,
   FETCH_FOLLOWERS,
   FETCH_NOTIFICATIONS,
+  RESET_NOTIFICATIONS,
 } from "../actions/types";
 import * as firebase from "firebase";
 const initialState = {
@@ -55,6 +56,14 @@ const chatReducer = (state = initialState, action) => {
         ...state,
         notifications: action.notifications,
         unseenChats: action.unseenChats,
+      };
+
+    case RESET_NOTIFICATIONS:
+      console.log("RESET_NOTIFICATIONS RESULTS", action.notifications);
+
+      return {
+        ...state,
+        notifications: [],
       };
     default:
       return state;

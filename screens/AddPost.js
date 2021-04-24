@@ -110,6 +110,12 @@ class AddPost extends React.Component {
       );
       return uri;
     } catch (e) {
+      this.setState({
+        videoThumb:
+          "https://banner2.cleanpng.com/20180329/khe/kisspng-computer-icons-youtube-play-button-clip-art-play-5abc71e8d9b1b3.5669073415222993688917.jpg",
+        fileThumb:
+          "https://banner2.cleanpng.com/20180329/khe/kisspng-computer-icons-youtube-play-button-clip-art-play-5abc71e8d9b1b3.5669073415222993688917.jpg",
+      });
       console.warn(e);
     }
   };
@@ -179,7 +185,7 @@ class AddPost extends React.Component {
                           console.log(this.state);
                         })
                         .catch((err) => {
-                          alert(err);
+                          console.warn(err);
                         });
                     })
                     .catch((error) => {
@@ -223,7 +229,7 @@ class AddPost extends React.Component {
                       console.log(this.state);
                     })
                     .catch((err) => {
-                      alert(err);
+                      console.warn(err);
                     });
                 })
                 .catch((error) => {
@@ -234,7 +240,7 @@ class AddPost extends React.Component {
             }
           })
           .catch((err) => {
-            alert(err);
+            console.warn(err);
           });
       });
   };
@@ -261,7 +267,7 @@ class AddPost extends React.Component {
           .storage()
           .ref()
           .child("postVideos/" + fileName);
-        blob = new Blob([uri + ".mov"], { type: "video/mov" });
+        blob = await response.blob();
         return ref.put(blob);
       } else {
         ref = firebase

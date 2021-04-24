@@ -89,7 +89,7 @@ export const signInWithGoogleAsync = async () => {
       behavior: "web",
       // androidClientId: YOUR_CLIENT_ID_HERE,
       clientId:
-        "3416567928-3tnaupt990vs9t6dv33cfg7cif8jtkrq.apps.googleusercontent.com",
+        "498031225132-tr3nisp1o1es9uucee6227ietihvvk1c.apps.googleusercontent.com",
 
       scopes: ["profile", "email"],
     });

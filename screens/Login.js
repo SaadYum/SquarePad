@@ -83,9 +83,9 @@ class Login extends React.Component {
           <Block style={styles.registerContainer}>
             <Block flex={0.25} middle style={styles.socialConnect}>
               <Text color="#8898AA" size={12}>
-                Log In with
+                Enter credentials
               </Text>
-              <Block row style={{ marginTop: theme.SIZES.BASE }}>
+              {/* <Block row style={{ marginTop: theme.SIZES.BASE }}>
                 <Button
                   style={{ ...styles.socialButtons, marginRight: 30 }}
                   onPress={() => {
@@ -118,9 +118,9 @@ class Login extends React.Component {
                       style={{ marginTop: 2, marginRight: 5 }}
                     />
                     <Text style={styles.socialTextButtons}>GOOGLE</Text>
-                  </Block>
+                  </Block> 
                 </Button>
-              </Block>
+              </Block> */}
             </Block>
 
             <Block flex>
@@ -130,9 +130,9 @@ class Login extends React.Component {
                   style={{ marginTop: 20, marginBottom: 10 }}
                   middle
                 >
-                  <Text color="#8898AA" size={12}>
+                  {/* <Text color="#8898AA" size={12}>
                     Or Log In with the Travy account.
-                  </Text>
+                  </Text> */}
                 </Block>
                 <Block flex center>
                   <KeyboardAvoidingView

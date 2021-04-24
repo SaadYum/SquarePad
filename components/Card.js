@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
+  Platform,
 } from "react-native";
 import { Block, Text, theme, Input } from "galio-framework";
 import Icon from "./Icon";
@@ -193,12 +194,12 @@ class Card extends React.Component {
         .set({
           userId: this.user.uid,
           username: this.state.currentUsername,
-          postId: this.state.postId,
+          postId: item.postId,
         }) &&
         this.firestoreLikeNotificationRef
           .set({
             content: "liked your post",
-            source: this.state.postId,
+            source: item.postId,
             time: new Date().getTime(),
             userId: this.user.uid,
             type: "like",
@@ -242,7 +243,7 @@ class Card extends React.Component {
         {this.props.item.userId == this.user.uid && (
           <OptionsButton
             style={
-              this.props.group ? { paddingLeft: 200 } : { paddingLeft: 220 }
+              Platform.OS == "ios" ? { paddingLeft: 280 } : { paddingLeft: 250 }
             }
             key="option-post"
             deletePost={this.deletePost}
@@ -349,22 +350,20 @@ class Card extends React.Component {
 
       // }).then((comment)=>{
       //   firebase.firestore().collection("comments").doc(item.postId).collection("userComments").doc(comment.id).set({
-      let randId = firebase
-        .firestore()
-        .collection("comments")
-        .doc(item.postId)
-        .collection("userComments")
-        .doc().id;
+      let randId = new Date().getTime().toString();
       firebase
         .firestore()
-        .collection("comments")
+        .collection("posts")
+        .doc(item.userId)
+        .collection("userPosts")
         .doc(item.postId)
-        .collection("userComments")
+        .collection("comments")
         .doc(randId)
         .set({
           commentId: randId,
           username: this.state.currentUsername,
           comment: myComment,
+          timestamp: randId,
           userId: this.user.uid,
           postUserId: this.state.userId,
         }) &&
@@ -372,13 +371,12 @@ class Card extends React.Component {
           .doc(randId)
           .set({
             content: "commented on your post",
-            source: this.state.postId,
+            source: item.postId,
             time: dateTimestamp,
             userId: this.user.uid,
             type: "comment",
           })
           .then(async () => {
-            alert("DPE");
             let pushToken = "";
 
             await firebase
@@ -443,9 +441,11 @@ class Card extends React.Component {
     //POST K hisab sa lao
     firebase
       .firestore()
-      .collection("comments")
+      .collection("posts")
+      .doc(item.userId)
+      .collection("userPosts")
       .doc(item.postId)
-      .collection("userComments")
+      .collection("comments")
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -476,6 +476,7 @@ class Card extends React.Component {
                     updateComments={this.getCommentData}
                     comment={item}
                     postId={this.props.item.postId}
+                    postUserId={this.props.item.userId}
                     userId={this.state.userId}
                     navigation={navigation}
                   />
@@ -568,11 +569,17 @@ class Card extends React.Component {
           <Block row style={{ flex: 1, paddingBottom: 12, paddingTop: 12 }}>
             <Block>
               <TouchableWithoutFeedback
-                onPress={() =>
-                  navigation.navigate("userProfile", {
-                    userId: this.state.userId,
-                  })
-                }
+                onPress={() => {
+                  if (this.state.userId == this.user.uid) {
+                    navigation.navigate("Profile", {
+                      userId: this.state.userId,
+                    });
+                  } else {
+                    navigation.navigate("userProfile", {
+                      userId: this.state.userId,
+                    });
+                  }
+                }}
               >
                 {this.renderAvatar()}
               </TouchableWithoutFeedback>
@@ -609,20 +616,18 @@ class Card extends React.Component {
               ) : (
                 <Video
                   source={{
-                    uri: item.Video,
-                    // uri:
-                    //   "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+                    uri: item.video,
                   }}
                   rate={1.0}
                   volume={1.0}
                   isMuted={false}
-                  resizeMode="cover"
-                  shouldPlay
+                  resizeMode="contain"
+                  // shouldPlay
                   // isLooping
-                  // useNativeControls
+                  useNativeControls
                   style={{
-                    width: width * 0.8,
-                    height: width * 0.5,
+                    width: width * 0.9,
+                    height: width * 0.6,
                     borderRadius: 15,
                   }}
                 />
@@ -725,14 +730,14 @@ const styles = StyleSheet.create({
   },
   fullImage2: {
     height: height * 0.4,
-    width: width * 0.75,
+    width: width * 0.8,
     borderRadius: 15,
     overflow: "hidden",
     backgroundColor: theme.COLORS.TRANSPARENT,
   },
   fullImage: {
     height: height * 0.5,
-    width: width * 0.8,
+    width: width * 0.9,
     borderRadius: 15,
     overflow: "hidden",
     backgroundColor: theme.COLORS.TRANSPARENT,

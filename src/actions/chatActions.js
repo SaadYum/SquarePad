@@ -4,6 +4,7 @@ import {
   FETCH_FOLLOWING,
   FETCH_FOLLOWERS,
   FETCH_NOTIFICATIONS,
+  RESET_NOTIFICATIONS,
 } from "./types";
 import * as firebase from "firebase";
 
@@ -97,13 +98,15 @@ export const fetchFollowing = () => {
                 .doc(userId)
                 .get()
                 .then((doc) => {
-                  let name = doc.data().username;
+                  let username = doc.data().username;
+                  let name = doc.data().name;
 
                   let avatar = doc.data().profilePic;
                   let push_token = doc.data().push_token;
 
                   let userObj = {
-                    username: name,
+                    username: username,
+                    name: name,
                     userId: userId,
                     avatar: avatar,
                     push_token:
@@ -152,13 +155,15 @@ export const fetchFollowers = () => {
                 .doc(userId)
                 .get()
                 .then((doc) => {
-                  let name = doc.data().username;
+                  let username = doc.data().username;
+                  let name = doc.data().name;
 
                   let avatar = doc.data().profilePic;
                   let push_token = doc.data().push_token;
 
                   let userObj = {
-                    username: name,
+                    username: username,
+                    name: name,
                     userId: userId,
                     avatar: avatar,
                     push_token:
@@ -186,6 +191,8 @@ export const fetchNotifications = (data) => {
     console.log("FETEEEE");
     let chatCounter = 0;
     let notificationsArray = [];
+    resetNotifications();
+
     firebase
       .firestore()
       .collection("notifications")
@@ -217,6 +224,10 @@ export const fetchNotifications = (data) => {
                 if (doc.data().type == "chat") {
                   chatCounter = chatCounter + 1;
                 }
+
+                notificationsArray = notificationsArray.sort((a, b) =>
+                  a.time < b.time ? 1 : -1
+                );
                 dispatch({
                   type: FETCH_NOTIFICATIONS,
                   notifications: notificationsArray,
@@ -226,5 +237,13 @@ export const fetchNotifications = (data) => {
           })
         );
       });
+  };
+};
+
+export const resetNotifications = () => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: RESET_NOTIFICATIONS,
+    });
   };
 };

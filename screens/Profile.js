@@ -24,6 +24,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { logOut } from "../services/auth.service";
 // import { getPosts } from "../constants/Images";
 import { connect } from "react-redux";
+import { RefreshControl } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -66,7 +68,10 @@ class Profile extends React.Component {
     posts: [],
     postCount: 0,
     followedUsers: 0,
+    followers: 0,
     followedByUsers: 0,
+    refreshing: false,
+    loading: true,
   };
 
   //AsynchStorage for pre loggin for already logged in users
@@ -212,7 +217,7 @@ class Profile extends React.Component {
 
   // Check wether the user has previously added any profile picture
   UNSAFE_componentWillMount = async () => {
-    this.getFollowedUsers();
+    // this.getFollowedUsers();
     try {
       let userProfilePic = await AsyncStorage.getItem(
         "userProflePic(" + this.user.uid + ")"
@@ -313,21 +318,26 @@ class Profile extends React.Component {
       .catch((err) => alert(err));
   };
 
-  getRealTimeUpdates = () => {
-    this.firestoreUserRef.onSnapshot((doc) => {
-      const res = doc.data();
-      this.storeToken(res);
-      // let userInfo = await AsyncStorage.getItem("userData");
-      // let userData = JSON.parse(userInfo);
+  getUserUpdate = () => {
+    this.firestoreUserRef
+      .get()
+      .then((doc) => {
+        const res = doc.data();
+        this.storeToken(res);
+        // let userInfo = await AsyncStorage.getItem("userData");
+        // let userData = JSON.parse(userInfo);
 
-      this.setState({
-        username: res.username,
-        bio: res.bio,
-        name: res.name,
-        email: res.email,
+        this.setState({
+          username: res.username,
+          bio: res.bio,
+          name: res.name,
+          email: res.email,
+        });
+        // console.log(res);
+      })
+      .then(() => {
+        this.setState({ refreshing: false });
       });
-      // console.log(res);
-    });
   };
 
   getPosts = () => {
@@ -338,16 +348,29 @@ class Profile extends React.Component {
       .doc(firebase.auth().currentUser.uid)
       .collection("userPosts")
       .orderBy("time", "desc")
-      .onSnapshot((snapshot) => {
+      .get()
+      .then((snapshot) => {
         cloudImages = [];
         snapshot.forEach((doc) => {
           cloudImages.push(doc.data());
         });
 
         //  console.log(cloudImages);
-        this.setState({ posts: cloudImages.map((post) => post) });
+        this.setState({
+          posts: cloudImages.map((post) => post),
+          loading: false,
+        });
         this.setState({ postCount: this.state.posts.length });
       });
+  };
+
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps.followers != this.props.followers) {
+      this.setState({ followers: this.props.followers });
+    }
+    if (prevProps.followedUsers != this.props.followedUsers) {
+      this.setState({ followedUsers: this.props.followedUsers });
+    }
   };
 
   componentDidMount() {
@@ -356,10 +379,12 @@ class Profile extends React.Component {
     //   this.setState({posts: res.map(post => post)});
 
     // }).catch((err)=>{console.log(err)})
+    this.setState({ followers: this.props.followers });
+    this.setState({ followedUsers: this.props.followedUsers });
     // this.getLocationAsync();
     this.getPosts();
 
-    this.getRealTimeUpdates();
+    this.getUserUpdate();
     this.getPermissionAsync();
   }
 
@@ -372,6 +397,14 @@ class Profile extends React.Component {
     }
   };
 
+  onRefresh = () => {
+    this.setState({ refreshing: true }, () => {
+      this.getPosts();
+
+      this.getUserUpdate();
+    });
+  };
+
   render() {
     let { profilePic } = this.state;
 
@@ -379,6 +412,12 @@ class Profile extends React.Component {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{ width, marginTop: "5%" }}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+        }
       >
         <Block style={styles.profileCard}>
           <Block middle flex row space="evenly" style={{ paddingBottom: 50 }}>
@@ -471,7 +510,7 @@ class Profile extends React.Component {
                     color="#525F7F"
                     style={{ marginBottom: 4 }}
                   >
-                    {this.props.followers.length}
+                    {this.state.followers.length}
                   </Text>
                   <Text size={12}>Followers</Text>
                 </Block>
@@ -488,7 +527,7 @@ class Profile extends React.Component {
                     size={12}
                     style={{ marginBottom: 4 }}
                   >
-                    {this.props.followedUsers.length}
+                    {this.state.followedUsers.length}
                   </Text>
                   <Text size={12}>Following</Text>
                 </Block>
@@ -524,6 +563,12 @@ class Profile extends React.Component {
               row
               style={{ paddingBottom: 20, justifyContent: "flex-end" }}
             ></Block>
+
+            {this.state.loading == true && (
+              <Block style={{ paddingTop: 30 }}>
+                <ActivityIndicator size="large" color="gray" />
+              </Block>
+            )}
             <Block style={{ paddingBottom: -HeaderHeight * 2 }}>
               <Block row space="between" style={{ flexWrap: "wrap" }}>
                 {/* {Images.Viewed.map((img, imgIndex) => ( */}
@@ -541,7 +586,9 @@ class Profile extends React.Component {
                         caption: post.caption,
                         video: post.type == "video" ? post.video : "",
                         type: post.type,
-                        location: post.location.locationName,
+                        location: post.location
+                          ? post.location.locationName
+                          : "",
                         postId: post.postId,
                         userId: post.userId,
                       });

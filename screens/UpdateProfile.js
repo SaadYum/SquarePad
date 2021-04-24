@@ -56,7 +56,8 @@ class UpdateProfile extends React.Component {
 
   updateProfile = () => {
     const { username, name, email, bio } = this.state;
-    let usernameKeywords = getKeywords(username);
+    let usernameKeywords = getKeywords(username.toLowerCase());
+    let nameKeywords = getKeywords(name.toLowerCase());
     this.firestoreUserRef
       .set(
         {
@@ -65,6 +66,7 @@ class UpdateProfile extends React.Component {
           email: email,
           bio: bio,
           usernameKeywords: usernameKeywords,
+          nameKeywords: nameKeywords,
         },
         { merge: true }
       )

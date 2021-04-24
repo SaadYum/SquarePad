@@ -7,6 +7,7 @@ import {
   Alert,
   Dimensions,
   View,
+  Modal,
 } from "react-native";
 import PropTypes from "prop-types";
 import { Button, Block, Text, Icon } from "galio-framework";
@@ -39,6 +40,8 @@ class Chat extends React.Component {
     this.state = {
       messages: [],
       currentPlanRef: "",
+      modalVisible: false,
+      modalVideo: "",
       secondUser: {},
       groupChatId: this.currentUserId + "-" + this.secondUserId,
       firestoreMessagesRef: "",
@@ -46,6 +49,10 @@ class Chat extends React.Component {
     };
     this.onSend = this.onSend.bind(this);
   }
+
+  toggleModal = () => {
+    this.setState({ modalVisible: !this.state.modalVisible });
+  };
 
   getMembersData = async (callback) => {
     this.firestoreUsersRef
@@ -369,6 +376,69 @@ class Chat extends React.Component {
     this.setState({ playVideo: !this.state.playVideo });
   };
 
+  renderModal = () => {
+    console.log("VIDEO", this.state.modalVideo);
+    return (
+      <Block>
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              alert("Modal has been closed.");
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Block row>
+                  <TouchableOpacity
+                    style={{
+                      ...styles.openButton,
+                      marginLeft: width * 0.8,
+                      backgroundColor: "#ebebeb",
+                      marginBottom: 10,
+                    }}
+                    onPress={() => {
+                      this.toggleModal();
+                    }}
+                  >
+                    <Icon
+                      family="antdesign"
+                      size={20}
+                      name="close"
+                      color={"black"}
+                    />
+                  </TouchableOpacity>
+                </Block>
+                <Block>
+                  <Video
+                    source={{
+                      uri: this.state.modalVideo,
+                    }}
+                    rate={1.0}
+                    volume={1.0}
+                    isMuted={false}
+                    resizeMode="contain"
+                    // shouldPlay
+                    // isLooping
+                    useNativeControls
+                    style={{
+                      width: width * 0.9,
+                      height: width * 0.6,
+                      borderRadius: 15,
+                      zIndex: 10,
+                    }}
+                  />
+                </Block>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      </Block>
+    );
+  };
+
   renderMessageVideo = (message) => {
     const { currentMessage } = message;
     let shouldPlay = false;
@@ -402,9 +472,14 @@ class Chat extends React.Component {
         <View style={styles.controlBar}>
           <TouchableOpacity
             onPress={() => {
-              this.props.navigation.navigate("ChatVideo", {
-                video: currentMessage.video,
-              });
+              this.setState(
+                {
+                  modalVideo: currentMessage.video,
+                },
+                () => {
+                  this.setState({ modalVisible: true });
+                }
+              );
             }}
           >
             <Icon size={20} color={"black"} name="play" family="antdesign" />
@@ -440,6 +515,8 @@ class Chat extends React.Component {
             _id: this.currentUserId,
           }}
         />
+        {this.state.modalVisible ? this.renderModal() : !this.renderModal()}
+
         {/* </Block> */}
         {/* <Block flex={1}>
           <Text>new dssdsj</Text>
@@ -499,6 +576,47 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingLeft: 4,
     color: argonTheme.COLORS.BLACK,
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 10,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    // alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
 
